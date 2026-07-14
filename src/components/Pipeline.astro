@@ -6,7 +6,7 @@ const stages = [
   { k: 'decode',  t: 'deterministic decode', s: 'topic0-keyed, versioned' },
   { k: 'views',   t: 'incremental views',  s: 'IVM · reorgs = retractions' },
   { k: 'store',   t: 'redb + Parquet',     s: 'hot tip · sealed segments' },
-  { k: 'serve',   t: 'SQL · GraphQL · streams · MCP', s: 'one local endpoint' },
+  { k: 'serve',   t: 'entities · SQL · balances · MCP', s: 'one local endpoint' },
 ];
 ---
 <ol class="pipe" aria-label="Nuthatch data path">
