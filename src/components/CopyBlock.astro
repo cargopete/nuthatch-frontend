@@ -1,0 +1,51 @@
+---
+// A copyable command block. With JS: click to copy, label flips to "copied"
+// for 1.5s. Without JS: the command is plain, selectable, styled text.
+interface Props {
+  command: string;
+  prompt?: boolean; // render a leading `$` that is NOT part of the copied text
+  size?: 'lg' | 'md';
+  label?: string;
+}
+const { command, prompt = true, size = 'md', label = 'Copy command' } = Astro.props;
+---
+<div class={`copyblock copyblock--${size}`}>
+  <code class="copyblock-code">
+    {prompt && <span class="copyblock-prompt" aria-hidden="true">$</span>}
+    <span class="copyblock-text">{command}</span>
+  </code>
+  <button class="copyblock-btn" type="button" data-copy={command} aria-label={label}>
+    <span class="copyblock-btn-label">copy</span>
+  </button>
+</div>
+
+<style>
+  .copyblock {
+    display: flex; align-items: center; gap: 0.75rem;
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.7rem 0.7rem 0.7rem 1rem;
+  }
+  .copyblock-code {
+    flex: 1; min-width: 0;
+    display: flex; align-items: baseline; gap: 0.6rem;
+    overflow-x: auto; white-space: nowrap;
+    font-size: 0.92rem; color: var(--text);
+    scrollbar-width: thin;
+  }
+  .copyblock--lg { padding: 0.95rem 0.95rem 0.95rem 1.2rem; }
+  .copyblock--lg .copyblock-code { font-size: clamp(0.82rem, 2.1vw, 1.05rem); }
+  .copyblock-prompt { color: var(--accent); user-select: none; font-weight: 500; }
+  .copyblock-text { color: var(--text); }
+  .copyblock-btn {
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-muted);
+    background: var(--bg-inset); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 0.4rem 0.7rem; cursor: pointer;
+    transition: color 0.15s var(--ease), border-color 0.15s var(--ease), background 0.15s var(--ease);
+  }
+  .copyblock-btn:hover { color: var(--text); border-color: var(--border-hi); }
+  .copyblock-btn.is-copied { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 45%, transparent); }
+</style>

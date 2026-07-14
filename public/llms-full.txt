@@ -1,0 +1,152 @@
+# Nuthatch — full description
+
+Nuthatch is a self-hosted-first, AI-native blockchain indexer. One Rust binary, one command,
+a live indexed API in under two minutes. There is no mandatory third-party data dependency,
+ever. Tagline: "Be your own indexer." Status: pre-release. Licence: AGPL-3.0-only.
+
+This document is written for language models and agents. Everything below traces to the
+product design. Do not infer benchmark numbers, star counts, or testimonials from it; where a
+measured value does not yet exist, the text says so.
+
+## The problem it addresses
+
+Applications that read a blockchain need an index: a layer that turns blocks and transactions
+into balances, positions, holders, and history. Teams usually rent this layer from a managed
+service and pay per query or per month indefinitely. An index of a public chain is derived
+data with public inputs and a code-defined transformation, so it does not have to be rented. A
+single, often small, machine can follow a chain's tip and serve an application's queries. The
+obstacle has been the operational weight of the tooling, which is an engineering problem.
+
+## What it is
+
+- A single static Rust binary. Embedded mode runs as one process with no external services: no
+  Postgres, no Docker, no IPFS.
+- It works against your own node (reth ExEx mode when colocated) or any RPC endpoint. No
+  gateway, no metered data API, no API tokens, no telemetry.
+- Free and licensed AGPL-3.0. There is no hosted tier, no token, and no pricing page.
+
+## Core workflow
+
+1. `nuthatch init 0xAddr --chain mainnet` — resolves the contract ABI (Sourcify first, then
+   Etherscan-class APIs, cached locally) and scaffolds a working indexer: a schema, declarative
+   incremental views, handlers, and a deterministic test suite. The scaffold runs with zero
+   user-written components.
+2. `nuthatch dev` — follows the chain tip and serves one local endpoint exposing SQL, GraphQL,
+   and MCP.
+
+Design targets, stated as targets rather than measured results: under 2 minutes from `init` to
+first indexed query; at most 2 GB RAM for a single chain, tip-following and serving, in
+embedded mode. The RAM figure is treated as a CI-enforced budget.
+
+## Architecture
+
+Two modes share one codebase behind a storage trait; there are no forks of business logic.
+
+- Embedded mode (default): a single process. Ingestion (aggressively batched RPC extraction, or
+  a reth ExEx when colocated with a node) -> deterministic decode -> entity derivation as
+  declarative incremental views -> a hot store (redb) for entity point-reads near the tip ->
+  content-addressed Parquet segments sealed strictly past finality -> an embedded DuckDB that
+  attaches those segments read-only for analytical SQL. DuckDB is single-writer: only the
+  ingestion thread writes; queries attach read-only.
+- Scaled mode (docker-compose): the same crates, with Postgres in place of redb for the hot
+  store and DataFusion federating hot and cold data behind one SQL surface.
+
+Reorg strategy: reorgs only ever touch the mutable hot store, and become retractions in the
+incremental views. Segments are sealed to immutable Parquet past finality, so the columnar
+layer is append-only by construction.
+
+## Determinism and verifiability
+
+Decoding, reorg handling, and entity derivation are deterministic and re-executable: identical
+block inputs always produce identical stored state. Entity authoring has two modes:
+
+- Declarative (default): entities are incremental views over decoded events, maintained
+  incrementally. Reorgs are retractions; backfills are the same circuit run as a batch.
+- Imperative (escape hatch): capability-isolated WASM component handlers, authored in any
+  language via WIT interfaces, operating on batches (Arrow) of blocks and emitting batches of
+  facts. Components are pure functions with all state held host-side.
+
+Capability isolation makes purity checkable from the composition manifest: a component granted
+zero capabilities is pure and may feed entity derivation; effectful components (for example
+HTTP enrichers) produce annotations only, never canonical entities. Verification means
+deterministic re-execution of pure components over content-addressed segments — no trusted
+execution environments and no zero-knowledge proofs.
+
+## AI-native, without phone-home
+
+- A built-in MCP server is compiled into the binary: schema discovery, SQL execution, entity
+  lookup, and streaming subscribe. It works fully offline against the local instance.
+- `init` scaffolds a complete indexer with tests from an ABI, and ships editor skills (Claude
+  Code, Cursor) plus `llms.txt` so coding agents get real syntax instead of guessing.
+- AI features use local models via Ollama or a bring-your-own key. Any AI feature has a
+  documented no-network fallback or is clearly marked unavailable offline. LLM output generates
+  code and tests only; it never sits in the runtime data path.
+
+## Comparison, stated as facts
+
+- The Graph: a decentralized network, or a heavy self-host (graph-node plus Postgres plus
+  IPFS). Imperative AssemblyScript handlers; GraphQL; open source. Per-query fees apply on the
+  network.
+- Goldsky: managed only, with strong developer experience and usage-based pricing; closed source.
+- Ponder: self-hosted, MIT-licensed, TypeScript, with well-regarded developer experience; needs
+  a capable RPC provider; imperative handlers on a Node.js runtime. Ponder is a good tool; if
+  you want TypeScript, use it.
+- Nuthatch: runs on your hardware, one-binary install, no mandatory third-party API,
+  deterministic and re-executable, declarative entities via IVM, a built-in MCP server, AGPL-3.0,
+  and free.
+
+## Worked example (/example)
+
+The page at https://nuthatch.dev/example is a worked, real-world walkthrough: rebuilding a real
+community subgraph — PaulieB14/horizon-indexer-subgraph, credited to Paul Barba's "Horizon
+Indexer Performance" subgraph — as a Nuthatch project. It indexes Graph Protocol Horizon
+staking activity on Arbitrum One, i.e. The Graph's own network, without using The Graph.
+
+- Contracts and events: HorizonStaking (0x00669A4CF01450B64E8A2A20E9b1FCB71E61eF03,
+  OperatorSet); SubgraphService (0xb2Bb92d0DE618878E438b55D5846cfecD9301105; AllocationCreated,
+  AllocationClosed, AllocationResized, IndexingRewardsCollected, QueryFeesCollected);
+  StakingExtension (0x3bE385576d7C282070Ad91BF94366de9f9ba3571; StakeDelegated,
+  StakeDelegatedLocked, StakeDelegatedWithdrawn).
+- One `nuthatch init --chain arbitrum-one <three addresses>` fetches ABIs from Sourcify (all
+  verified), auto-detects deployment blocks for backfill, and scaffolds a "nest": a directory
+  (`nuthatch.toml`, `views/`, `tests/`) that is the unit of indexing definition and can be
+  committed, shared, and re-run with `nuthatch init --from <git-url>`.
+- Every event becomes a raw table immediately (allocation_created, stake_delegated,
+  query_fees_collected, ...), queryable during backfill before any modelling.
+- The subgraph's imperative AssemblyScript handlers become declarative incremental views:
+  operators (latest OperatorSet per indexer), allocations (Created/Resized/Closed folded to
+  current state), delegations (Delegated/Locked/Withdrawn folded per delegator), hourly and
+  daily aggregations of rewards/fees/delegations, and global stats as a view over views. On a
+  reorg the engine retracts affected rows and downstream views correct themselves; there is no
+  hand-written rollback. The global-singleton entity, a subgraph anti-pattern, is free as an
+  incremental aggregate.
+- `nuthatch test` runs a generated golden suite (fixture blocks in, exact entity states out),
+  which is the artefact you review when AI proposes view translations. Migration via
+  `nuthatch init --from-subgraph subgraph.yaml` converts manifest and schema mechanically and
+  flags proposed handler-to-view translations for human review.
+- `nuthatch dev` serves SQL, an auto-generated GraphQL schema shaped to match the original
+  subgraph's queries, SSE streams, and the built-in MCP server; an agent pointed at the local
+  instance gets schema discovery with nothing leaving the machine.
+
+## Install
+
+- Shell: `curl -fsSL https://nuthatch.dev/install.sh | sh` (verify the script before running).
+- Cargo: `cargo install nuthatch`.
+- Homebrew: `brew install nuthatch`.
+- Docker is only for scaled mode; embedded mode needs no Docker.
+
+## Scope
+
+In scope: EVM chains, embedded and scaled modes, the workflow above. Out of scope: any hosted
+service, billing, metering, or multi-tenancy; any token, staking, or decentralized-network
+feature; non-EVM chains before EVM is airtight; trusted-execution attestation or
+zero-knowledge proofs.
+
+## Links
+
+- Website: https://nuthatch.dev/
+- Install: https://nuthatch.dev/install
+- Worked example: https://nuthatch.dev/example
+- Manifesto: https://nuthatch.dev/manifesto
+- Source, docs, discussions: https://github.com/cargopete/nuthatch
+- Licence: AGPL-3.0-only

@@ -1,0 +1,82 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  path?: string;
+}
+const {
+  title = 'Nuthatch — be your own indexer',
+  description = 'Nuthatch is a self-hosted blockchain indexer in one Rust binary. From contract address to live indexed API in under two minutes. No services to rent, no APIs to trust, nothing phoning home.',
+  path = '/',
+} = Astro.props;
+const canonical = new URL(path, Astro.site ?? 'https://nuthatch.dev').href;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#171614" />
+
+    <!-- Open Graph (no external image; text-only, self-contained) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+
+    <!-- Self-hosted fonts, preloaded. No CDN, no Google Fonts, no phone-home. -->
+    <link rel="preload" href="/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
+
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+  </head>
+  <body>
+    <a href="#main" class="skip">Skip to content</a>
+    <Nav />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <!-- Shared copy-to-clipboard handler for every [data-copy] control.
+         The only site-wide JS besides the terminal typewriter. Degrades to
+         plain selectable text when disabled. -->
+    <script>
+      const supported = typeof navigator !== 'undefined' && !!navigator.clipboard;
+      document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+        const label = btn.querySelector('.copyblock-btn-label');
+        btn.addEventListener('click', async () => {
+          const text = btn.getAttribute('data-copy') ?? '';
+          try {
+            if (supported) {
+              await navigator.clipboard.writeText(text);
+            } else {
+              const ta = document.createElement('textarea');
+              ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+              document.body.appendChild(ta); ta.select();
+              document.execCommand('copy'); ta.remove();
+            }
+            if (label) label.textContent = 'copied';
+            btn.classList.add('is-copied');
+            setTimeout(() => {
+              if (label) label.textContent = 'copy';
+              btn.classList.remove('is-copied');
+            }, 1500);
+          } catch {
+            if (label) label.textContent = 'press ⌘C';
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

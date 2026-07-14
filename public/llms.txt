@@ -1,0 +1,68 @@
+# Nuthatch
+
+> A self-hosted-first, AI-native blockchain indexer in one Rust binary. From a contract
+> address to a live indexed API in under two minutes, with no mandatory third-party data
+> service and nothing phoning home.
+
+Nuthatch indexes EVM chains on your own hardware. Embedded mode runs as a single static
+binary with no external services: no Postgres, no Docker, no IPFS. It works against your own
+node (reth ExEx mode) or any RPC. It is free and licensed AGPL-3.0. Status: pre-release.
+
+Tagline: "Be your own indexer."
+
+## What it does
+
+- `nuthatch init 0xAddr --chain mainnet` resolves the ABI (Sourcify, then Etherscan-class
+  APIs) and scaffolds an indexer: schema, incremental views, handlers, and a passing test suite.
+- `nuthatch dev` follows the chain tip and serves one local endpoint: SQL, GraphQL, and MCP.
+- Design targets: under 2 minutes from `init` to first indexed query; at most 2 GB RAM for a
+  single chain, tip-following and serving, enforced as a CI budget.
+
+## How it works
+
+- Ingestion (RPC extraction, or reth ExEx when colocated) -> deterministic decode -> entities
+  as declarative incremental views (IVM) -> a hot store (redb) for point-reads at the tip ->
+  content-addressed Parquet segments sealed past finality -> embedded DuckDB attached read-only
+  for analytical SQL.
+- Reorgs touch only the mutable hot store and become retractions in the incremental views. The
+  columnar layer is append-only by construction.
+- The escape hatch is capability-isolated WASM component handlers, in any language via WIT. A
+  component granted zero capabilities is a pure function and can be re-executed and verified.
+
+## Principles
+
+- Single static binary; zero external services in embedded mode.
+- No phone-home: no telemetry, no mandatory API tokens, no gated data service, ever.
+- Deterministic core: decode, reorg handling, and entity derivation are reproducible. LLMs
+  generate code and tests; LLM output never sits in the runtime data path.
+- AI-native: a built-in MCP server, semantic schema discovery, shipped `llms.txt` and editor
+  skills, local models via Ollama or bring-your-own-key. Every AI feature degrades gracefully
+  offline.
+
+## Install
+
+- Shell: `curl -fsSL https://nuthatch.dev/install.sh | sh`
+- Cargo: `cargo install nuthatch`
+- Homebrew: `brew install nuthatch`
+- Docker is only needed for scaled mode (Postgres + DataFusion), not embedded mode.
+
+## Worked example
+
+`/example` walks through rebuilding a real community Graph Protocol subgraph
+(PaulieB14/horizon-indexer-subgraph, credited to Paul Barba) as a Nuthatch "nest": indexing
+Graph Horizon staking on Arbitrum One across three contracts (HorizonStaking, SubgraphService,
+StakingExtension). It shows one `init` over three addresses, raw event tables queryable during
+backfill, the subgraph's imperative AssemblyScript handlers rebuilt as declarative incremental
+views (reorgs retract; no rollback code), golden tests, and serving over SQL, GraphQL, SSE, and
+MCP. A "nest" is the unit of indexing definition: a directory of config and views you can
+commit, share, and re-run (`nuthatch init --from <git-url>`).
+
+## Links
+
+- Website: https://nuthatch.dev/
+- Install guide: https://nuthatch.dev/install
+- Worked example (subgraph to nest): https://nuthatch.dev/example
+- Manifesto: https://nuthatch.dev/manifesto
+- Source and docs: https://github.com/cargopete/nuthatch
+- Full description for models: https://nuthatch.dev/llms-full.txt
+- Licence: AGPL-3.0-only

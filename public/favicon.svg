@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Nuthatch">
+  <!-- the trunk: a nuthatch climbs down it headfirst -->
+  <rect x="5" y="3" width="3" height="26" rx="1.5" fill="#8bb8dc"/>
+  <!-- body, angled head-down -->
+  <polygon points="9,8 21,11 16,18 13,27 8,16" fill="#8bb8dc"/>
+  <!-- underside + beak, in rust -->
+  <polygon points="11,15 16,17 13,25" fill="#cd8560"/>
+  <polygon points="11.6,25 14.4,25 13,30" fill="#cd8560"/>
+</svg>

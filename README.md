@@ -1,0 +1,100 @@
+# nuthatch-frontend
+
+The website for [Nuthatch](https://github.com/cargopete/nuthatch) — a self-hosted-first,
+AI-native blockchain indexer in one Rust binary.
+
+Built with [Astro](https://astro.build), static output only. The site's pitch is "nothing
+phones home", so the site practises it: no third-party requests, no analytics, no external
+scripts, self-hosted fonts. The only client-side JavaScript is copy-to-clipboard on code
+blocks and the terminal typewriter, both of which degrade gracefully with JS disabled.
+
+## Structure
+
+```
+public/
+  fonts/                 self-hosted, subset variable fonts (Space Grotesk, JetBrains Mono)
+  favicon.svg            the nuthatch mark: head-down on a vertical line, two colours
+  install.sh             pre-release placeholder installer (echo + exit 0)
+  llms.txt               concise, agent-legible product summary
+  llms-full.txt          full description for language models
+  robots.txt             welcomes crawlers; points at the sitemap and llms files
+  sitemap.xml            three URLs
+src/
+  layouts/Layout.astro   <head>, fonts, meta, skip link, nav + footer
+  components/
+    Nav.astro            sticky nav + CSS-only light/dark toggle (:has() checkbox hack)
+    Footer.astro         links, licence, "no third-party resources" note
+    Mark.astro           the logo, theme-aware inline SVG
+    CopyBlock.astro      copyable command block (copy button flips to "copied")
+    CodeCard.astro       multi-line code block, build-time Shiki highlight + copy button
+    Terminal.astro       faux-OS terminal, static transcript + typewriter enhancement
+    Pipeline.astro       the data-path flow diagram (stacks on mobile)
+  pages/
+    index.astro          the landing page (all sections + real-example teaser)
+    install.astro        expanded install instructions + verification
+    example.astro        worked example: a Graph Horizon subgraph rebuilt as a nest
+    manifesto.astro      the essay
+  styles/global.css      design tokens (dark default + light) and shared styles
+astro.config.mjs         static output, inlined CSS, compressed HTML
+wrangler.toml            Cloudflare Pages config
+```
+
+## Design
+
+Follows the `minimalist-ui` taste skill (premium utilitarian minimalism: flat surfaces, 1px
+borders, scarce pastel spot-accents, macro whitespace, editorial type), rendered dark-by-default
+with a CSS-only light toggle. The light theme is the skill's exact warm-monochrome palette.
+Type is Space Grotesk (variable, headings and body) and JetBrains Mono (code and terminal),
+both self-hosted and subset to the glyphs actually used.
+
+## Develop
+
+```sh
+npm install
+npm run dev        # http://localhost:4321
+```
+
+## Build
+
+```sh
+npm run build      # outputs a self-contained dist/
+npm run preview    # serve the built site locally
+```
+
+`dist/` is plain static files and works on any static host.
+
+## Deploy — Cloudflare Pages
+
+- Build command: `npm run build`
+- Build output directory: `dist`
+- Framework preset: Astro (or "None")
+
+`wrangler.toml` is included. The same `dist/` also deploys to Netlify, GitHub Pages, or a
+plain nginx box with no changes.
+
+## Performance budget
+
+The landing page is intended to stay under **100 KB total transfer** (excluding any future
+terminal recording) and score Lighthouse 100 across the board. The two woff2 fonts (~40 KB
+combined) are the only sub-resources; CSS is inlined into each page; the interaction JS is a
+few hundred bytes. Being tiny and instant is part of the pitch — keep it that way.
+
+Fonts were subset from the full latin variable faces with `fonttools`:
+Space Grotesk keeps its weight axis; JetBrains Mono is pinned to a single weight.
+
+## TODO placeholders
+
+These are intentional, marked in-source with `<!-- TODO -->` comments where practical:
+
+| Placeholder | Where | Replace with |
+|---|---|---|
+| GitHub star badge | `src/pages/index.astro` (hero, `.stars`) | a live star count / badge post-launch |
+| Measured benchmarks | proof cards say `target` | real measured RAM / time-to-first-query once available (the product repo already reports ~33 MB measured; the site keeps design-target framing until numbers are final) |
+| Terminal recording | `src/components/Terminal.astro` + caption in `index.astro` | an asciinema recording of a real run, if preferred over the typewriter |
+| GPG signing key | `src/pages/install.astro` (`.keybox-id`) | the real release signing key id + fingerprint at first tagged release |
+| `install.sh` | `public/install.sh` | the real platform-detecting, checksum-verifying installer at first release |
+| `docker-compose.yml` | referenced on `/install` | the real scaled-mode compose file |
+
+## Licence
+
+The Nuthatch project is AGPL-3.0. This site's content is part of that project.

@@ -1,0 +1,60 @@
+---
+import Mark from './Mark.astro';
+---
+<footer class="foot">
+  <div class="wrap">
+    <hr class="divider" />
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="/" class="brand" aria-label="Nuthatch home">
+          <Mark size={22} />
+          <span>nuthatch</span>
+        </a>
+        <p class="foot-tag">Be your own indexer.</p>
+      </div>
+      <nav class="foot-cols" aria-label="Footer">
+        <div>
+          <span class="foot-h">Project</span>
+          <a href="https://github.com/cargopete/nuthatch" rel="noopener">GitHub</a>
+          <a href="https://github.com/cargopete/nuthatch/tree/main/docs" rel="noopener">Docs</a>
+          <a href="https://github.com/cargopete/nuthatch/discussions" rel="noopener">Discussions</a>
+        </div>
+        <div>
+          <span class="foot-h">Get it</span>
+          <a href="/install">Install</a>
+          <a href="/example">Example</a>
+          <a href="/manifesto">Manifesto</a>
+          <a href="https://github.com/cargopete/nuthatch/blob/main/LICENSE" rel="noopener">Licence: AGPL-3.0</a>
+        </div>
+      </nav>
+    </div>
+    <p class="foot-note">
+      Built in Bulgaria <span class="flag" aria-hidden="true">🇧🇬</span>
+      &nbsp;·&nbsp; This site loads no third-party resources.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .foot { padding-block: 3rem 2.5rem; }
+  .foot-grid {
+    display: flex; flex-wrap: wrap; gap: 2.5rem; justify-content: space-between;
+    padding-top: 2.5rem;
+  }
+  .brand { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text); font-weight: 600; letter-spacing: -0.02em; }
+  .brand:hover { text-decoration: none; }
+  .foot-tag { color: var(--text-faint); font-size: 0.9rem; margin-top: 0.6rem; }
+  .foot-cols { display: flex; gap: 3.5rem; flex-wrap: wrap; }
+  .foot-cols > div { display: flex; flex-direction: column; gap: 0.55rem; }
+  .foot-h {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-faint); margin-bottom: 0.25rem;
+  }
+  .foot-cols a { color: var(--text-muted); font-size: 0.9rem; }
+  .foot-cols a:hover { color: var(--text); text-decoration: none; }
+  .foot-note {
+    margin-top: 2.5rem; color: var(--text-faint); font-size: 0.82rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .flag { font-family: initial; }
+</style>

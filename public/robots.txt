@@ -1,0 +1,9 @@
+# Nuthatch welcomes crawlers, indexers, and agents.
+User-agent: *
+Allow: /
+
+# Machine-readable summaries for language models:
+#   /llms.txt       — concise overview
+#   /llms-full.txt  — full description
+
+Sitemap: https://nuthatch.dev/sitemap.xml

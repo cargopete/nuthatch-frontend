@@ -1,0 +1,18 @@
+# build output
+dist/
+.astro/
+
+# deps
+node_modules/
+
+# installed agent skills (not part of the site source)
+.agents/
+.claude/
+
+# env & editor
+.env
+.env.production
+.DS_Store
+*.log
+.vscode/
+.idea/

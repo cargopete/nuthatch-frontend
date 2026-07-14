@@ -1,0 +1,174 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CopyBlock from '../components/CopyBlock.astro';
+import CodeCard from '../components/CodeCard.astro';
+
+const initCmd = `nuthatch init --chain arbitrum-one \\
+  0x00669A4CF01450B64E8A2A20E9b1FCB71E61eF03 \\
+  0xb2Bb92d0DE618878E438b55D5846cfecD9301105 \\
+  0x3bE385576d7C282070Ad91BF94366de9f9ba3571`;
+
+const rawQuery = `select subgraph_deployment_id,
+       indexer,
+       tokens / 1e18 as grt
+from allocation_created
+where block_number > (select max(block_number) from allocation_created) - 10000
+order by tokens desc
+limit 10;`;
+
+const indexersView = `create view indexers as
+select indexer,
+       sum(tokens_indexer_rewards)                as total_rewards_earned,
+       sum(query_fees)                            as total_query_fees,
+       count(*) filter (where status = 'Active')  as active_allocation_count
+from allocations
+left join reward_events using (allocation_id)
+group by indexer;`;
+
+const graphqlQuery = `{
+  indexers(first: 10, orderBy: total_rewards_earned, orderDirection: desc) {
+    indexer
+    total_rewards_earned
+    total_query_fees
+    active_allocation_count
+  }
+}`;
+---
+<Layout
+  path="/example"
+  title="From subgraph to nest: indexing Graph Horizon — Nuthatch"
+  description="A worked example: a real Graph Horizon analytics subgraph — three contracts, folded delegation state, time-bucketed aggregations — rebuilt as a Nuthatch nest. Raw events queryable in minutes, entities as incremental views, no rollback code."
+>
+  <section class="page">
+    <article class="wrap narrow prose">
+      <p class="section-label">Real-world example</p>
+      <h1>From subgraph to nest: indexing Graph Horizon</h1>
+
+      <p>
+        This example indexes The Graph's own network activity — operator mappings,
+        allocations, indexing rewards and query fees, delegation balances — without using The
+        Graph to do it. It runs on your hardware, against Arbitrum One, from three contracts.
+      </p>
+      <p>
+        It is a real community subgraph, not a toy. It is based on
+        <a href="https://github.com/PaulieB14/horizon-indexer-subgraph" rel="noopener">Paul Barba's Horizon Indexer Performance subgraph</a>,
+        and it was chosen precisely because it is awkward: three contracts, state derived across
+        their events, delegation balances that fold deposits and withdrawals together, and
+        rewards and fees bucketed by hour and by day. An ERC-20 transfer counter this is not.
+      </p>
+
+      <h2>One command, three contracts</h2>
+      <CodeCard code={initCmd} lang="bash" label="shell" />
+      <p>
+        The ABIs come from Sourcify — all three contracts are verified — and each contract's
+        deployment block is detected automatically, so the backfill knows where to start.
+        What you get back is a <strong>nest</strong>: a scaffolded project with
+        <code>nuthatch.toml</code>, a <code>views/</code> directory, and a
+        <code>tests/</code> directory.
+      </p>
+      <p>
+        A nest is the unit of indexing definition — a directory of config and views you can
+        commit, share, and re-run anywhere. A published nest is reusable directly:
+        <code>nuthatch init --from &lt;git-url&gt;</code> pulls someone else's and runs it
+        against your own node.
+      </p>
+
+      <h2>Queryable before you model anything</h2>
+      <p>
+        Every event in those ABIs is a table the moment the nest exists —
+        <code>allocation_created</code>, <code>stake_delegated</code>,
+        <code>query_fees_collected</code>, and the rest — filling in as the backfill streams
+        through history. Before you write a single line of modelling, you can ask real
+        questions of the raw layer:
+      </p>
+      <CodeCard code={rawQuery} lang="sql" label="the ten biggest allocations opened in the last 10,000 blocks" />
+      <p>
+        In a subgraph you get nothing until the handlers are written and the thing has synced.
+        Here the raw event layer is free, and it is queryable while you are still deciding what
+        the entities should be.
+      </p>
+
+      <h2>Entities are views, not handlers</h2>
+      <p>
+        The subgraph expresses its entities as AssemblyScript handlers: imperative
+        read-modify-write against an entity store, one function per event, mutating rows by
+        hand. In the nest those become declarative incremental views. The engine maintains them
+        as events arrive, and on a reorg it retracts the affected rows and lets every view that
+        depends on them correct itself. There is no rollback code, because there is nothing to
+        roll back by hand.
+      </p>
+      <CodeCard code={indexersView} lang="sql" label="views/indexers.sql" />
+      <p>The rest of the subgraph maps across the same way:</p>
+      <ul class="maplist">
+        <li><span class="mk">operators</span> — the latest <code>OperatorSet</code> per indexer.</li>
+        <li><span class="mk">allocations</span> — <code>Created</code>, <code>Resized</code>, and <code>Closed</code> folded into current state and status.</li>
+        <li><span class="mk">delegations</span> — <code>Delegated</code>, <code>Locked</code>, and <code>Withdrawn</code> folded per delegator into a running balance.</li>
+        <li><span class="mk">daily and hourly aggregations</span> — ordinary time-bucketed views of rewards, fees, and delegation events, maintained incrementally.</li>
+        <li><span class="mk">global stats</span> — a view over the views above.</li>
+      </ul>
+      <p class="aside">
+        The global-singleton entity is a well-known subgraph anti-pattern: every event contends
+        on one hot row, and it serialises writes across the whole indexer. As an incremental
+        aggregate it costs nothing — a running total the engine already keeps.
+      </p>
+
+      <h2>Tests you can trust more than the author</h2>
+      <p>
+        <code>init</code> also generates a golden test suite: fixture blocks in, exact entity
+        states asserted out, run with <code>nuthatch test</code>. When the scaffolder proposes
+        views — from an AI translation of handlers, or from a plain-English
+        <code>--describe</code> — the deterministic tests are the artefact you actually review.
+        You are trusting the assertions, not the prose that produced them.
+      </p>
+      <CopyBlock command="nuthatch test" />
+      <p class="note">
+        Migrating an existing subgraph is mechanical where it can be: <code>nuthatch init
+        --from-subgraph subgraph.yaml</code> converts the manifest and schema directly, and
+        flags every proposed view translation of a handler for human review rather than
+        assuming it got the logic right.
+      </p>
+
+      <h2>Serve it</h2>
+      <p>
+        <code>nuthatch dev</code> brings up one local endpoint: SQL, an auto-generated GraphQL
+        schema, SSE streams, and the built-in MCP server. The GraphQL is shaped so that queries
+        written against the original subgraph carry over with little change:
+      </p>
+      <CodeCard code={graphqlQuery} lang="graphql" label="top indexers by rewards" />
+      <p>
+        The MCP server is the same endpoint from an agent's side. Point Claude, or any client,
+        at your own instance and ask which indexers earned the most this week — schema
+        discovery is built in, so it knows the shape without being told, and nothing leaves
+        your machine.
+      </p>
+
+      <hr class="divider close-div" />
+      <p class="signoff">
+        So this page described indexing The Graph's network without The Graph — on your own
+        hardware, with no deploy key, no gateway, and no query fees. The subgraph it is based on
+        is worth reading. <a href="/manifesto">Read the manifesto</a>, or
+        <a href="https://github.com/cargopete/nuthatch" rel="noopener">star the repo</a>.
+      </p>
+    </article>
+  </section>
+</Layout>
+
+<style>
+  .page { padding-block: clamp(3rem, 6vw, 4.5rem) clamp(4rem, 9vw, 6.5rem); }
+  .prose h1 { margin-bottom: 1.6rem; line-height: 1.12; }
+  .prose h2 { margin-top: 2.8rem; margin-bottom: 1rem; font-size: 1.5rem; }
+  .prose p { color: var(--text-muted); font-size: 1.05rem; line-height: 1.72; margin-bottom: 1.3rem; }
+  .prose p:first-of-type { color: var(--text); }
+  .prose :global(.copyblock) { margin-bottom: 1.3rem; }
+  .maplist { margin: 0 0 1.3rem; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+  .maplist li { color: var(--text-muted); font-size: 0.98rem; padding-left: 1.3rem; position: relative; }
+  .maplist li::before { content: '·'; position: absolute; left: 0.3rem; color: var(--accent); font-weight: 700; }
+  .mk { color: var(--text); font-weight: 500; }
+  .aside {
+    border-left: 2px solid var(--border-hi);
+    padding-left: 1.1rem; font-size: 0.98rem; color: var(--text-faint);
+  }
+  .note { font-size: 0.92rem; color: var(--text-faint); }
+  .close-div { margin-block: 2.4rem 1.8rem; }
+  .signoff { color: var(--text) !important; }
+</style>

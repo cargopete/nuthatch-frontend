@@ -1,0 +1,125 @@
+---
+// The product "screenshot": a faux-OS terminal window replaying the init → dev
+// flow. Full transcript is static in the DOM (works with JS disabled). With JS,
+// it types out; the reserved line-height means zero layout shift either way.
+---
+<div class="term" role="img" aria-label="Terminal recording of nuthatch init followed by nuthatch dev, ending with a live API served on localhost port 4242.">
+  <div class="term-bar">
+    <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="term-title">nuthatch — zsh — 92×14</span>
+  </div>
+  <div class="term-body" aria-hidden="true">
+    <div class="tline" data-pause="520"><span class="tline-pre pre-cmd">$</span><span class="tline-body">nuthatch init 0x1F98431c8aD98523631AE4a59f267346ea31F984 --chain mainnet</span></div>
+    <div class="tline tline--out" data-pause="120"><span class="tline-pre pre-ok">✓</span><span class="tline-body">fetched ABI from Sourcify</span></div>
+    <div class="tline tline--out" data-pause="120"><span class="tline-pre pre-ok">✓</span><span class="tline-body">generated schema (7 entities)</span></div>
+    <div class="tline tline--out" data-pause="320"><span class="tline-pre pre-ok">✓</span><span class="tline-body">generated views + handlers + tests</span></div>
+    <div class="tline" data-pause="520"><span class="tline-pre pre-cmd">$</span><span class="tline-body">nuthatch dev</span></div>
+    <div class="tline tline--out" data-pause="200"><span class="tline-pre pre-ok">✓</span><span class="tline-body">tip following at block 21,439,201 (312ms behind head)</span></div>
+    <div class="tline tline--out" data-serve="1"><span class="tline-pre pre-serve">●</span><span class="tline-body">serving  http://localhost:4242  (SQL · GraphQL · MCP)</span></div>
+  </div>
+</div>
+
+<style>
+  .term {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .term-bar {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    background: color-mix(in srgb, var(--text) 5%, var(--bg-code));
+    border-bottom: 1px solid var(--border);
+  }
+  .term-dots { display: inline-flex; gap: 0.45rem; }
+  .term-dots i { width: 11px; height: 11px; border-radius: 50%; background: var(--border-hi); }
+  .term-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-faint);
+    margin-inline: auto; padding-right: 3rem;
+  }
+  .term-body {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(0.72rem, 1.9vw, 0.92rem);
+    line-height: 1.85;
+    padding: 1.1rem 1.2rem 1.4rem;
+    color: var(--text);
+    overflow-x: auto;
+  }
+  .tline {
+    display: flex; gap: 0.6rem; white-space: pre; min-height: 1.85em;
+    transition: opacity 0.15s var(--ease);
+  }
+  .tline--out { padding-left: 1.2rem; }
+  .tline-pre { flex-shrink: 0; font-weight: 500; }
+  .pre-cmd { color: var(--accent); }
+  .pre-ok { color: var(--ok); }
+  .pre-serve { color: var(--ok); }
+  .tline-body { color: var(--text); }
+  .tline[data-serve] .tline-body { color: var(--text-muted); }
+
+  /* animation mode: lines reserved (opacity 0), revealed as typed */
+  .term--anim .tline { opacity: 0; }
+  .term--anim .tline.is-active { opacity: 1; }
+
+  .pre-serve { position: relative; }
+  .tline[data-serve] .pre-serve { animation: pulse 2.4s var(--ease) infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+  .term-cursor {
+    color: var(--accent); font-weight: 400; margin-left: 1px;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .tline[data-serve] .pre-serve, .term-cursor { animation: none; }
+  }
+</style>
+
+<script>
+  const term = document.querySelector<HTMLElement>('.term');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (term && !reduce) {
+    const lines = Array.from(term.querySelectorAll<HTMLElement>('.tline'));
+    const bodies = lines.map((l) => l.querySelector<HTMLElement>('.tline-body')!);
+    const texts = bodies.map((b) => b.textContent ?? '');
+    const cursor = document.createElement('span');
+    cursor.className = 'term-cursor';
+    cursor.textContent = '▋';
+
+    const revealAll = () => {
+      lines.forEach((l, i) => { l.classList.add('is-active'); bodies[i].textContent = texts[i]; });
+      cursor.remove();
+    };
+    const safety = setTimeout(revealAll, 14000);
+
+    term.classList.add('term--anim');
+    bodies.forEach((b) => (b.textContent = ''));
+
+    let li = 0;
+    const typeLine = () => {
+      if (li >= lines.length) { clearTimeout(safety); cursor.remove(); return; }
+      const line = lines[li];
+      const body = bodies[li];
+      const text = texts[li];
+      line.classList.add('is-active');
+      line.appendChild(cursor);
+      let ci = 0;
+      const step = () => {
+        if (ci <= text.length) {
+          body.textContent = text.slice(0, ci);
+          line.appendChild(cursor);
+          ci++;
+          setTimeout(step, text.length > 44 ? 12 : 24);
+        } else {
+          li++;
+          const pause = Number(line.dataset.pause ?? 180);
+          setTimeout(typeLine, pause);
+        }
+      };
+      step();
+    };
+    // start after fonts/paint settle
+    setTimeout(typeLine, 450);
+  }
+</script>

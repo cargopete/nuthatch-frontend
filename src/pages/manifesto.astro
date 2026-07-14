@@ -1,0 +1,80 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout
+  path="/manifesto"
+  title="Manifesto — Nuthatch"
+  description="An indexing endpoint is application infrastructure. Renting it forever is a choice, not a necessity. Why Nuthatch is deterministic, free, and AGPL."
+>
+  <section class="page">
+    <article class="wrap narrow prose">
+      <p class="section-label">Manifesto</p>
+      <h1>An endpoint you own</h1>
+
+      <p>
+        Every application that reads a blockchain needs an index. Raw nodes answer questions
+        about blocks and transactions; applications ask questions about balances, positions,
+        holders, and history. The layer that turns one into the other is not a feature you bolt
+        on at the end. It is infrastructure, and it sits underneath everything the product does.
+      </p>
+
+      <p>
+        For most teams that layer arrives as a bill. You send your queries to someone else's
+        service, you pay per request or per month, and the meter never stops. It works, and on
+        day one it is the fastest path. But you have handed a load-bearing part of your
+        application to a vendor, priced it as a subscription, and accepted that if the vendor
+        changes terms, degrades, or disappears, your product goes with it. That is a choice. It
+        is worth noticing that it is a choice, because it is usually made by default.
+      </p>
+
+      <p>
+        Nuthatch exists because the default should be the other way round. An index of a public
+        chain is derived data. The inputs are public, the transformation is code, and the output
+        is something you can hold on your own hardware. There is no physical reason it has to be
+        rented. A single machine, often a small one, can follow a chain's tip and serve a
+        product's queries. The hard part was never the compute. It was the operational weight of
+        the tools, and that is an engineering problem, not a law of nature.
+      </p>
+
+      <p>
+        So Nuthatch is one static binary. Point it at a contract address, and about two minutes
+        later you have a live indexed API on your box: SQL, GraphQL, and MCP, over an embedded
+        store with no Postgres, no Docker, and no third-party data service in the path. It runs
+        against your own node or any RPC. Nothing phones home, because there is nothing it needs
+        to phone home about.
+      </p>
+
+      <p>
+        Owning the endpoint only matters if you can trust it, so the core is deterministic by
+        construction. Decoding, reorg handling, and entity derivation are reproducible: the same
+        blocks in always produce the same state out. Entities are declarative incremental views,
+        so a reorg is a retraction rather than a hand-written rollback, and a backfill is the
+        same logic run as a batch. Where you need imperative code, it runs as a capability-isolated
+        WASM component: one granted no capabilities is a pure function, and a pure function can be
+        re-executed and checked by anyone. Verification here means running the code again and
+        getting the same answer, not trusting a claim about it.
+      </p>
+
+      <p>
+        This is why Nuthatch is free and licensed AGPL-3.0. Infrastructure you depend on should
+        be infrastructure you can read, run, fork, and keep. There is no hosted tier, no token,
+        and no pricing page, because the point is not to sell you back the endpoint you could run
+        yourself. Use it, change it, and if you run a modified version as a service, share the
+        changes. That is the whole arrangement.
+      </p>
+
+      <p class="signoff">
+        Be your own indexer. <a href="/install">Install it</a>, or
+        <a href="https://github.com/cargopete/nuthatch" rel="noopener">read the source</a>.
+      </p>
+    </article>
+  </section>
+</Layout>
+
+<style>
+  .page { padding-block: clamp(3rem, 6vw, 4.5rem) clamp(4rem, 9vw, 6.5rem); }
+  .prose h1 { margin-bottom: 1.8rem; }
+  .prose p { color: var(--text-muted); font-size: 1.08rem; line-height: 1.75; margin-bottom: 1.4rem; }
+  .prose p:first-of-type { color: var(--text); }
+  .signoff { color: var(--text) !important; font-weight: 500; margin-top: 2rem; }
+</style>

@@ -1,0 +1,313 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CopyBlock from '../components/CopyBlock.astro';
+import Terminal from '../components/Terminal.astro';
+import Pipeline from '../components/Pipeline.astro';
+
+const GH = 'https://github.com/cargopete/nuthatch';
+
+// Comparison rows. mark: 'yes' | 'no' | 'part' | text-only via `text`.
+const cols = ['Nuthatch', 'The Graph', 'Goldsky', 'Ponder'];
+const rows = [
+  { f: 'Runs on your hardware',        c: [ ['yes'], ['part','Heavy self-host'], ['no','Managed only'], ['yes'] ] },
+  { f: 'One-binary install',           c: [ ['yes'], ['no','node + PG + IPFS'], ['no'], ['no','Node.js runtime'] ] },
+  { f: 'No mandatory third-party API', c: [ ['yes'], ['part','If self-hosted'], ['no','Required'], ['part','Needs an RPC'] ] },
+  { f: 'Deterministic / re-executable',c: [ ['yes'], ['part','PoI'], ['no'], ['no','Imperative'] ] },
+  { f: 'Declarative entities (IVM)',   c: [ ['yes'], ['no','AssemblyScript'], ['no'], ['no','TypeScript'] ] },
+  { f: 'Built-in MCP server',          c: [ ['yes'], ['no'], ['no'], ['no'] ] },
+  { f: 'Licence',                      c: [ ['t','AGPL-3.0'], ['t','Open source'], ['t','Closed'], ['t','MIT'] ] },
+  { f: 'Price',                        c: [ ['t','Free'], ['t','Per-query fees'], ['t','Usage-based'], ['t','Free'] ] },
+];
+---
+<Layout path="/">
+  <!-- 1. HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="hero-eyebrow rise rise-1"><span class="tag">Pre-release · AGPL-3.0</span></p>
+      <h1 class="rise rise-1">Be your own indexer.</h1>
+      <p class="hero-sub narrow rise rise-2">
+        Nuthatch is a self-hosted blockchain indexer in one Rust binary. From contract
+        address to live indexed API in under two minutes. No services to rent, no APIs to
+        trust, nothing phoning home.
+      </p>
+
+      <div class="hero-cta rise rise-3">
+        <CopyBlock command="curl -fsSL https://nuthatch.dev/install.sh | sh" size="lg" />
+        <p class="hero-alt">
+          or: <code>cargo install nuthatch</code> · <code>brew install nuthatch</code>
+          &nbsp;·&nbsp;
+          <a href="https://github.com/cargopete/nuthatch-frontend/blob/main/public/install.sh" rel="noopener">verify the script</a>
+        </p>
+      </div>
+
+      <div class="hero-links rise rise-3">
+        <a class="btn btn-primary" href="/install">Read the install guide</a>
+        <a class="btn btn-ghost" href={GH} rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          Star on GitHub
+          <span class="stars"><!-- TODO: live badge post-launch -->—</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. TERMINAL DEMO -->
+  <section class="demo">
+    <div class="wrap">
+      <Terminal />
+      <p class="demo-caption">
+        <!-- TODO: replace typewriter with an asciinema recording of a real run -->
+        A real run, start to finish. <code>init</code> resolves the ABI and scaffolds the
+        project; <code>dev</code> follows the tip and serves it.
+      </p>
+    </div>
+  </section>
+
+  <!-- 3. THREE PROOF POINTS -->
+  <section class="proof">
+    <div class="wrap">
+      <div class="proof-grid">
+        <div class="card proof-card">
+          <div class="proof-stat">≤ 2 GB RAM <span class="tag proof-tag">target</span></div>
+          <p>One chain, tip-following and serving, on a €5 VPS. That's the budget, enforced in CI.</p>
+        </div>
+        <div class="card proof-card">
+          <div class="proof-stat">&lt; 2 minutes <span class="tag proof-tag">target</span></div>
+          <p>Contract address to live indexed API. Timed from <code>init</code> to first query.</p>
+        </div>
+        <div class="card proof-card">
+          <div class="proof-stat">0 third parties</div>
+          <p>No gateway, no metered API, no tokens, no telemetry. Your node, your data, your box.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- 4. HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="wrap">
+      <p class="section-label">How it works</p>
+      <h2 class="how-h narrow">One process, from RPC to a query you can trust.</h2>
+      <div class="how-diagram">
+        <Pipeline />
+      </div>
+      <div class="how-cols">
+        <div>
+          <h3>Two engines, one binary</h3>
+          <p>
+            A hot store (redb) answers entity point-reads at the tip. Past finality, ranges
+            seal to content-addressed Parquet segments, and an embedded DuckDB attaches them
+            read-only for analytical SQL. Single writer, no Postgres, no Docker.
+          </p>
+        </div>
+        <div>
+          <h3>Entities as incremental views</h3>
+          <p>
+            Entities are declarative views over decoded events, maintained incrementally. A
+            reorg is a retraction, not a pile of rollback code. Backfills are the same circuit
+            run as a batch. The columnar layer stays append-only, by construction.
+          </p>
+        </div>
+        <div>
+          <h3>Deterministic by construction</h3>
+          <p>
+            Decode and derivation are reproducible. The escape hatch is capability-isolated
+            WASM components in any language via WIT. A component granted zero capabilities is
+            pure, so it can be re-executed and verified. Effectful ones only annotate.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- 5. COMPARISON -->
+  <section class="compare" id="compare">
+    <div class="wrap">
+      <p class="section-label">Where it sits</p>
+      <h2 class="narrow">The honest comparison.</h2>
+      <div class="table-scroll">
+        <table class="ctable">
+          <thead>
+            <tr>
+              <th scope="col" class="ct-feature"></th>
+              {cols.map((c, i) => <th scope="col" class={i === 0 ? 'ct-us' : ''}>{c}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr>
+                <th scope="row" class="ct-feature">{r.f}</th>
+                {r.c.map((cell, i) => {
+                  const kind = cell[0];
+                  const note = cell[1];
+                  return (
+                    <td class={i === 0 ? 'ct-us' : ''}>
+                      {kind === 'yes' && <span class="ct-mark ct-yes" aria-label="yes">✓</span>}
+                      {kind === 'no' && <span class="ct-mark ct-no" aria-label="no">—</span>}
+                      {kind === 'part' && <span class="ct-mark ct-part" aria-label="partial">~</span>}
+                      {kind === 't' && <span class="ct-text">{note}</span>}
+                      {note && kind !== 't' && <span class="ct-note">{note}</span>}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="compare-foot">
+        Ponder is excellent. If you want TypeScript, use it. The Graph and Goldsky are good
+        tools too; this table states facts, not a verdict.
+      </p>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- 5b. REAL EXAMPLE TEASER -->
+  <section class="teaser" id="example">
+    <div class="wrap">
+      <div class="teaser-inner">
+        <div>
+          <p class="section-label">A real example</p>
+          <h2 class="teaser-h">Three contracts, folded state, real aggregations.</h2>
+          <p class="teaser-copy">
+            A real Graph Horizon analytics subgraph, rebuilt as a nest: three contracts,
+            folded delegation state, time-bucketed aggregations. Raw events queryable in
+            minutes; entities as incremental views; zero rollback code.
+          </p>
+        </div>
+        <a class="btn btn-ghost teaser-btn" href="/example">See the walkthrough →</a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- 6. AI-NATIVE -->
+  <section class="ai" id="ai">
+    <div class="wrap">
+      <p class="section-label">AI-native, sovereignty-respecting</p>
+      <h2 class="narrow">The AI writes the code. It never sits in the data path.</h2>
+      <div class="ai-cols">
+        <div class="card ai-card">
+          <span class="ai-kicker">For agents</span>
+          <ul class="ai-list">
+            <li>A built-in MCP server: schema discovery, SQL, entity lookup, streaming subscribe.</li>
+            <li>Semantic schema discovery so a model gets real types, not a guess.</li>
+            <li>Ships <code>llms.txt</code> and docs an agent can read.</li>
+            <li>Works fully offline against your local instance.</li>
+          </ul>
+        </div>
+        <div class="card ai-card">
+          <span class="ai-kicker">For you</span>
+          <ul class="ai-list">
+            <li><code>init</code> scaffolds a complete indexer with a passing test suite from an ABI.</li>
+            <li>Ships Claude Code and Cursor skills, so the tools know the syntax.</li>
+            <li>Local models via Ollama, or bring your own key.</li>
+            <li>Every AI feature degrades gracefully with no network.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING CTA -->
+  <section class="close">
+    <div class="wrap narrow close-inner">
+      <h2>Two minutes. One binary. No one to ask.</h2>
+      <CopyBlock command="curl -fsSL https://nuthatch.dev/install.sh | sh" size="lg" />
+      <p class="close-alt"><a href="/install">Full install options</a> · <a href="/manifesto">Read the manifesto</a></p>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* HERO */
+  .hero { padding-block: clamp(3.5rem, 8vw, 6rem) clamp(2.5rem, 5vw, 3.5rem); }
+  .hero-eyebrow { margin-bottom: 1.4rem; }
+  .hero h1 { max-width: 16ch; }
+  .hero-sub { margin-top: 1.5rem; font-size: clamp(1.05rem, 2.4vw, 1.3rem); color: var(--text-muted); }
+  .hero-cta { margin-top: 2.4rem; max-width: 40rem; }
+  .hero-alt { margin-top: 0.8rem; font-size: 0.86rem; color: var(--text-faint); }
+  .hero-alt code { font-size: 0.82em; }
+  .hero-links { margin-top: 1.8rem; display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+  .stars { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-faint); margin-left: 0.15rem; }
+
+  /* DEMO */
+  .demo { padding-top: 0; }
+  .demo-caption { margin-top: 1.1rem; font-size: 0.9rem; color: var(--text-faint); max-width: 42rem; }
+
+  /* PROOF */
+  .proof { padding-top: clamp(3rem, 6vw, 4.5rem); }
+  .proof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .proof-card p { color: var(--text-muted); font-size: 0.94rem; margin-top: 0.6rem; }
+  .proof-stat {
+    font-size: clamp(1.3rem, 3vw, 1.7rem); font-weight: 600; letter-spacing: -0.03em;
+    display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+  }
+  .proof-tag { background: var(--pale-rust-bg); color: var(--rust); vertical-align: middle; }
+  @media (max-width: 44rem) { .proof-grid { grid-template-columns: 1fr; } }
+
+  /* HOW */
+  .how-h { margin-bottom: 2.2rem; }
+  .how-diagram { margin-bottom: 2.8rem; }
+  .how-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem 2.5rem; }
+  .how-cols h3 { margin-bottom: 0.6rem; }
+  .how-cols p { color: var(--text-muted); font-size: 0.94rem; }
+  @media (max-width: 46rem) { .how-cols { grid-template-columns: 1fr; gap: 1.8rem; } }
+
+  /* COMPARE */
+  .compare h2 { margin-bottom: 2rem; }
+  .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+  .ctable { width: 100%; border-collapse: collapse; min-width: 40rem; font-size: 0.9rem; }
+  .ctable th, .ctable td { text-align: left; padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .ctable thead th { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; letter-spacing: 0.02em; color: var(--text-muted); font-weight: 500; }
+  .ctable tbody tr:last-child th, .ctable tbody tr:last-child td { border-bottom: 0; }
+  .ct-feature { color: var(--text); font-weight: 500; width: 32%; }
+  .ct-us { background: var(--pale-blue-bg); }
+  thead .ct-us { color: var(--accent-ink); font-weight: 600; }
+  .ct-mark { font-weight: 600; }
+  .ct-yes { color: var(--ok); }
+  .ct-no { color: var(--text-faint); }
+  .ct-part { color: var(--warn); }
+  .ct-text { color: var(--text); }
+  .ct-note { display: block; font-size: 0.75rem; color: var(--text-faint); margin-top: 0.15rem; }
+  .compare-foot { margin-top: 1.2rem; font-size: 0.85rem; color: var(--text-faint); }
+
+  /* TEASER */
+  .teaser-inner {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: clamp(1.6rem, 4vw, 2.6rem);
+  }
+  .teaser-h { margin-bottom: 0.9rem; max-width: 20ch; }
+  .teaser-copy { color: var(--text-muted); font-size: 0.98rem; max-width: 52ch; }
+  .teaser-btn { flex-shrink: 0; white-space: nowrap; }
+  @media (max-width: 44rem) {
+    .teaser-inner { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* AI */
+  .ai h2 { margin-bottom: 2rem; }
+  .ai-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .ai-kicker {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-faint);
+  }
+  .ai-list { margin: 1rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+  .ai-list li { color: var(--text-muted); font-size: 0.94rem; padding-left: 1.3rem; position: relative; }
+  .ai-list li::before { content: '↳'; position: absolute; left: 0; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+  @media (max-width: 44rem) { .ai-cols { grid-template-columns: 1fr; } }
+
+  /* CLOSE */
+  .close { padding-block: clamp(3.5rem, 7vw, 5.5rem); }
+  .close-inner { text-align: center; }
+  .close-inner h2 { margin-bottom: 1.8rem; }
+  .close-inner :global(.copyblock) { text-align: left; }
+  .close-alt { margin-top: 1rem; font-size: 0.88rem; color: var(--text-faint); }
+</style>
