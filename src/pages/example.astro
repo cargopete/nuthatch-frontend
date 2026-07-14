@@ -37,12 +37,21 @@ const graphqlQuery = `{
 <Layout
   path="/example"
   title="From subgraph to nest: indexing Graph Horizon — Nuthatch"
-  description="A worked example: a real Graph Horizon analytics subgraph — three contracts, folded delegation state, time-bucketed aggregations — rebuilt as a Nuthatch nest. Raw events queryable in minutes, entities as incremental views, no rollback code."
+  description="Design preview: how a real Graph Horizon subgraph would be rebuilt as a Nuthatch nest — multi-contract, folded state, incremental views. The target design, not the current binary, which indexes a single contract today."
 >
   <section class="page">
     <article class="wrap narrow prose">
-      <p class="section-label">Real-world example</p>
+      <p class="section-label">Design preview</p>
       <h1>From subgraph to nest: indexing Graph Horizon</h1>
+
+      <p class="preview-note">
+        <strong>This is a design preview, not the current binary.</strong> It describes where
+        Nuthatch is headed — multi-contract nests, user-authored views, generated tests, and a
+        GraphQL layer. Today the binary indexes a single contract (ERC-20 transfers) with an
+        incremental balance view, read-only SQL over sealed data, and a built-in MCP server; see
+        the <a href="/install">quickstart</a>. What follows is written in the present tense for
+        readability, but marks the target, not today's feature set.
+      </p>
 
       <p>
         This example indexes The Graph's own network activity — operator mappings,
@@ -159,6 +168,12 @@ const graphqlQuery = `{
   .prose h2 { margin-top: 2.8rem; margin-bottom: 1rem; font-size: 1.5rem; }
   .prose p { color: var(--text-muted); font-size: 1.05rem; line-height: 1.72; margin-bottom: 1.3rem; }
   .prose p:first-of-type { color: var(--text); }
+  .preview-note {
+    background: var(--pale-rust-bg); border: 1px solid var(--border);
+    border-left: 3px solid var(--rust); border-radius: var(--radius);
+    padding: 1rem 1.2rem; font-size: 0.95rem !important; color: var(--text-muted) !important;
+  }
+  .preview-note strong { color: var(--text); }
   .prose :global(.copyblock) { margin-bottom: 1.3rem; }
   .maplist { margin: 0 0 1.3rem; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
   .maplist li { color: var(--text-muted); font-size: 0.98rem; padding-left: 1.3rem; position: relative; }

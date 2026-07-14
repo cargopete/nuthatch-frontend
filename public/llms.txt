@@ -1,33 +1,50 @@
 # Nuthatch
 
 > A self-hosted-first, AI-native blockchain indexer in one Rust binary. From a contract
-> address to a live indexed API in under two minutes, with no mandatory third-party data
-> service and nothing phoning home.
+> address to a live indexed API, with no mandatory third-party data service and nothing
+> phoning home.
 
 Nuthatch indexes EVM chains on your own hardware. Embedded mode runs as a single static
-binary with no external services: no Postgres, no Docker, no IPFS. It works against your own
-node (reth ExEx mode) or any RPC. It is free and licensed AGPL-3.0. Status: pre-release.
+binary with no external services: no Postgres, no Docker, no IPFS. It is free and licensed
+AGPL-3.0. Status: pre-release. This file separates what the binary does today from the design
+targets, so a model does not present unbuilt features as present-tense fact.
 
 Tagline: "Be your own indexer."
 
-## What it does
+## What it does today
 
-- `nuthatch init 0xAddr --chain mainnet` resolves the ABI (Sourcify, then Etherscan-class
-  APIs) and scaffolds an indexer: schema, incremental views, handlers, and a passing test suite.
-- `nuthatch dev` follows the chain tip and serves one local endpoint: SQL, GraphQL, and MCP.
-- Design targets: under 2 minutes from `init` to first indexed query; at most 2 GB RAM for a
-  single chain, tip-following and serving, enforced as a CI budget.
+- `nuthatch init 0xAddr --chain mainnet` resolves the ABI (Sourcify, then an Etherscan-class
+  API) and scaffolds a project: `nuthatch.toml`, `abi.json`, an `llms.txt`, and a Claude Code
+  skill. It does not yet generate schemas, views, handlers, or tests.
+- `nuthatch dev` polls logs over RPC (round-robin failover), decodes ERC-20 `Transfer` events,
+  stores them in an embedded hot store (redb), seals finalized ranges to content-addressed
+  Parquet, and serves a local HTTP API on 127.0.0.1:8288: `/entities`, `/entity/{id}`, `/sql`
+  (read-only DuckDB over sealed data), `/balances`, `/balance/{addr}`.
+- Balances are an incrementally-maintained view (DBSP); a reorg is a retraction.
+- `nuthatch transform <component.wasm>` runs a pure, capability-isolated WASM transform over a
+  batch (Arrow). `nuthatch mcp` serves the Model Context Protocol over stdio (tools: status,
+  schema, sql, entity, balance, top_balances), bridging offline to a running instance.
+
+## Design targets (not built yet)
+
+- Under 2 minutes from `init` to first query; at most 2 GB RAM for a single chain (a CI budget
+  enforces a 256 MB ceiling in tests today).
+- reth ExEx tip-ingestion against your own node (designed and stubbed; RPC is the working path).
+- Multi-contract "nests", user-authored SQL views, generated schemas + tests from an ABI, a
+  GraphQL layer, streaming subscribe, scaled mode (Postgres + DataFusion), and local AI models
+  (Ollama / bring-your-own-key).
 
 ## How it works
 
-- Ingestion (RPC extraction, or reth ExEx when colocated) -> deterministic decode -> entities
-  as declarative incremental views (IVM) -> a hot store (redb) for point-reads at the tip ->
-  content-addressed Parquet segments sealed past finality -> embedded DuckDB attached read-only
-  for analytical SQL.
-- Reorgs touch only the mutable hot store and become retractions in the incremental views. The
+- Ingestion (RPC extraction today; reth ExEx when colocated, designed) -> deterministic decode
+  -> a hot store (redb) for point-reads at the tip -> content-addressed Parquet sealed past
+  finality -> embedded DuckDB attached read-only for analytical SQL. Balances are declarative
+  incremental views (IVM).
+- Reorgs touch only the mutable hot store and become retractions in the incremental view. The
   columnar layer is append-only by construction.
-- The escape hatch is capability-isolated WASM component handlers, in any language via WIT. A
-  component granted zero capabilities is a pure function and can be re-executed and verified.
+- The escape hatch is capability-isolated WASM components via WIT. A component granted zero
+  capabilities is a pure function and can be re-executed and verified; its purity is checkable
+  from its imports alone.
 
 ## Principles
 
@@ -35,34 +52,31 @@ Tagline: "Be your own indexer."
 - No phone-home: no telemetry, no mandatory API tokens, no gated data service, ever.
 - Deterministic core: decode, reorg handling, and entity derivation are reproducible. LLMs
   generate code and tests; LLM output never sits in the runtime data path.
-- AI-native: a built-in MCP server, semantic schema discovery, shipped `llms.txt` and editor
-  skills, local models via Ollama or bring-your-own-key. Every AI feature degrades gracefully
-  offline.
+- AI-native today: a built-in MCP server, a `schema` tool, and a shipped `llms.txt` and Claude
+  Code skill, all offline against your local instance. Local models (Ollama / BYO-key) are planned.
 
-## Install
+## Install (pre-release)
 
-- Shell: `curl -fsSL https://nuthatch-indexer.com/install.sh | sh`
-- Cargo: `cargo install nuthatch`
-- Homebrew: `brew install nuthatch`
-- Docker is only needed for scaled mode (Postgres + DataFusion), not embedded mode.
+- No published binaries yet; the shell installer is a placeholder that prints a notice.
+- Build from source: `cargo install nuthatch` (the crate name is reserved; publish is imminent).
+- Homebrew tap and the Docker (scaled-mode) stack are planned.
 
-## Worked example
+## Worked example (design preview)
 
-`/example` walks through rebuilding a real community Graph Protocol subgraph
-(PaulieB14/horizon-indexer-subgraph, credited to Paul Barba) as a Nuthatch "nest": indexing
-Graph Horizon staking on Arbitrum One across three contracts (HorizonStaking, SubgraphService,
-StakingExtension). It shows one `init` over three addresses, raw event tables queryable during
-backfill, the subgraph's imperative AssemblyScript handlers rebuilt as declarative incremental
-views (reorgs retract; no rollback code), golden tests, and serving over SQL, GraphQL, SSE, and
-MCP. A "nest" is the unit of indexing definition: a directory of config and views you can
-commit, share, and re-run (`nuthatch init --from <git-url>`).
+`/example` is a design preview: it describes how a real community Graph Protocol subgraph
+(PaulieB14/horizon-indexer-subgraph, credited to Paul Barba) would be rebuilt as a Nuthatch
+"nest" — Graph Horizon staking on Arbitrum One across three contracts, one `init` over several
+addresses, raw event tables queryable during backfill, AssemblyScript handlers rebuilt as
+declarative incremental views (reorgs retract; no rollback code), generated tests, and serving
+over SQL, GraphQL, SSE, and MCP. This is the target design, not the current binary, which indexes
+a single contract's `Transfer` events with an incremental balance view.
 
 ## Links
 
-- Website: https://nuthatch-indexer.com/
-- Install guide: https://nuthatch-indexer.com/install
-- Worked example (subgraph to nest): https://nuthatch-indexer.com/example
-- Manifesto: https://nuthatch-indexer.com/manifesto
+- Website: https://www.nuthatch-indexer.com/
+- Install guide: https://www.nuthatch-indexer.com/install
+- Design preview (subgraph to nest): https://www.nuthatch-indexer.com/example
+- Manifesto: https://www.nuthatch-indexer.com/manifesto
 - Source and docs: https://github.com/cargopete/nuthatch
-- Full description for models: https://nuthatch-indexer.com/llms-full.txt
+- Full description for models: https://www.nuthatch-indexer.com/llms-full.txt
 - Licence: AGPL-3.0-only

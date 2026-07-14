@@ -6,7 +6,7 @@ const GH = 'https://github.com/cargopete/nuthatch';
 <Layout
   path="/install"
   title="Install Nuthatch"
-  description="Install Nuthatch: shell script, cargo, Homebrew, or Docker for scaled mode. With checksum and signature verification."
+  description="Install Nuthatch: build from source with cargo today; a shell installer, Homebrew tap, and Docker (scaled mode) are planned. With checksum and signature verification."
 >
   <section class="page">
     <div class="wrap narrow">
@@ -18,8 +18,15 @@ const GH = 'https://github.com/cargopete/nuthatch';
         then <code>nuthatch dev</code>.
       </p>
 
-      <h2 class="ih">Shell script</h2>
-      <p>Detects your platform, downloads the matching static binary, verifies its checksum, and puts it on your <code>PATH</code>.</p>
+      <p class="prerelease-note">
+        Nuthatch is pre-release. There are no published binaries yet and the shell installer is a
+        placeholder; the routes below describe the intended install surface. To try it today, build
+        from source with <code>cargo</code>. The Homebrew tap and the Docker (scaled-mode) stack are
+        planned.
+      </p>
+
+      <h2 class="ih">Shell script <span class="tag">planned</span></h2>
+      <p>Will detect your platform, download the matching static binary, verify its checksum, and put it on your <code>PATH</code>. Today it prints a pre-release notice.</p>
       <CopyBlock command="curl -fsSL https://nuthatch-indexer.com/install.sh | sh" size="lg" />
       <p class="note">
         Piping to a shell asks for trust. Read it first:
@@ -31,15 +38,15 @@ const GH = 'https://github.com/cargopete/nuthatch';
       <p>If you have a Rust toolchain, build from source. No prebuilt binary in the trust path.</p>
       <CopyBlock command="cargo install nuthatch" />
 
-      <h2 class="ih">Homebrew</h2>
-      <p>macOS and Linuxbrew.</p>
+      <h2 class="ih">Homebrew <span class="tag">planned</span></h2>
+      <p>macOS and Linuxbrew, once a tap is published.</p>
       <CopyBlock command="brew install nuthatch" />
 
-      <h2 class="ih">Docker — scaled mode</h2>
+      <h2 class="ih">Docker — scaled mode <span class="tag">planned</span></h2>
       <p>
-        Embedded mode needs no Docker. Reach for the compose stack only for scaled mode,
-        where Postgres replaces the embedded hot store and DataFusion federates hot and cold
-        behind one SQL surface. Same crates, one storage flag.
+        Embedded mode needs no Docker. The compose stack is for scaled mode — where Postgres
+        replaces the embedded hot store and DataFusion federates hot and cold behind one SQL
+        surface. That mode, and this stack, are not built yet.
       </p>
       <CopyBlock command="curl -fsSL https://nuthatch-indexer.com/docker-compose.yml -o docker-compose.yml && docker compose up" prompt={true} />
 
@@ -48,8 +55,9 @@ const GH = 'https://github.com/cargopete/nuthatch';
       <CopyBlock command="nuthatch init 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 --chain mainnet" />
       <CopyBlock command="nuthatch dev" />
       <p class="note">
-        <code>init</code> writes a config and the resolved ABI. <code>dev</code> follows the
-        tip and serves SQL, GraphQL, and MCP on one local endpoint.
+        <code>init</code> writes a config, the resolved ABI, an <code>llms.txt</code>, and a Claude
+        Code skill. <code>dev</code> follows the tip and serves entities, read-only SQL, balances,
+        and MCP on one local endpoint.
       </p>
 
       <hr class="divider ih-div" />
@@ -82,6 +90,12 @@ const GH = 'https://github.com/cargopete/nuthatch';
   .page p { color: var(--text-muted); margin-bottom: 1rem; }
   .page :global(.copyblock) { margin-bottom: 0.6rem; }
   .note { font-size: 0.88rem; color: var(--text-faint); }
+  .prerelease-note {
+    background: var(--pale-rust-bg); border: 1px solid var(--border);
+    border-left: 3px solid var(--rust); border-radius: var(--radius);
+    padding: 0.9rem 1.1rem; font-size: 0.92rem; margin-bottom: 2rem;
+  }
+  .ih .tag { font-size: 0.62rem; vertical-align: middle; margin-left: 0.4rem; }
   .keybox { margin-top: 1rem; background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem 1.3rem; }
   .keybox-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); }
   .keybox-id { display: block; margin-top: 0.5rem; font-size: 0.82rem; color: var(--accent-ink); word-break: break-all; }

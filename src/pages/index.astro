@@ -34,7 +34,7 @@ const rows = [
       <div class="hero-cta rise rise-3">
         <CopyBlock command="curl -fsSL https://nuthatch-indexer.com/install.sh | sh" size="lg" />
         <p class="hero-alt">
-          or: <code>cargo install nuthatch</code> · <code>brew install nuthatch</code>
+          or: <code>cargo install nuthatch</code>
           &nbsp;·&nbsp;
           <a href="https://github.com/cargopete/nuthatch-frontend/blob/main/public/install.sh" rel="noopener">verify the script</a>
         </p>
@@ -56,9 +56,8 @@ const rows = [
     <div class="wrap">
       <Terminal />
       <p class="demo-caption">
-        <!-- TODO: replace typewriter with an asciinema recording of a real run -->
         A real run, start to finish. <code>init</code> resolves the ABI and scaffolds the
-        project; <code>dev</code> follows the tip and serves it.
+        project; <code>dev</code> follows the tip, seals finalized ranges to Parquet, and serves it.
       </p>
     </div>
   </section>
@@ -114,8 +113,8 @@ const rows = [
           <h3>Deterministic by construction</h3>
           <p>
             Decode and derivation are reproducible. The escape hatch is capability-isolated
-            WASM components in any language via WIT. A component granted zero capabilities is
-            pure, so it can be re-executed and verified. Effectful ones only annotate.
+            WASM components via WIT. A component granted zero capabilities is pure, so it can be
+            re-executed and verified; effectful ones only annotate.
           </p>
         </div>
       </div>
@@ -173,15 +172,15 @@ const rows = [
     <div class="wrap">
       <div class="teaser-inner">
         <div>
-          <p class="section-label">A real example</p>
-          <h2 class="teaser-h">Three contracts, folded state, real aggregations.</h2>
+          <p class="section-label">Design preview</p>
+          <h2 class="teaser-h">Where it's headed: subgraph to nest.</h2>
           <p class="teaser-copy">
-            A real Graph Horizon analytics subgraph, rebuilt as a nest: three contracts,
-            folded delegation state, time-bucketed aggregations. Raw events queryable in
-            minutes; entities as incremental views; zero rollback code.
+            The design target — a real Graph Horizon subgraph rebuilt as a nest: multiple
+            contracts, folded delegation state, time-bucketed views. Today's binary indexes a
+            single contract with an incremental balance view; the walkthrough shows the plan.
           </p>
         </div>
-        <a class="btn btn-ghost teaser-btn" href="/example">See the walkthrough →</a>
+        <a class="btn btn-ghost teaser-btn" href="/example">See the design →</a>
       </div>
     </div>
   </section>
@@ -197,19 +196,19 @@ const rows = [
         <div class="card ai-card">
           <span class="ai-kicker">For agents</span>
           <ul class="ai-list">
-            <li>A built-in MCP server: schema discovery, SQL, entity lookup, streaming subscribe.</li>
-            <li>Semantic schema discovery so a model gets real types, not a guess.</li>
-            <li>Ships <code>llms.txt</code> and docs an agent can read.</li>
+            <li>A built-in MCP server: schema discovery, SQL, entity and balance lookup.</li>
+            <li>A <code>schema</code> tool, so a model gets the data model, not a guess.</li>
+            <li>Ships <code>llms.txt</code> and a Claude Code skill an agent can read.</li>
             <li>Works fully offline against your local instance.</li>
           </ul>
         </div>
         <div class="card ai-card">
           <span class="ai-kicker">For you</span>
           <ul class="ai-list">
-            <li><code>init</code> scaffolds a complete indexer with a passing test suite from an ABI.</li>
-            <li>Ships Claude Code and Cursor skills, so the tools know the syntax.</li>
-            <li>Local models via Ollama, or bring your own key.</li>
-            <li>Every AI feature degrades gracefully with no network.</li>
+            <li><code>init</code> resolves the ABI and scaffolds the project: config, <code>llms.txt</code>, and a Claude Code skill.</li>
+            <li>The skill hands the tool the real query surface, so it uses actual endpoints, not guesses.</li>
+            <li><em>Planned:</em> generated schema, views, and tests from an ABI, reviewed through the deterministic core.</li>
+            <li><em>Planned:</em> local models via Ollama or your own key — no AI feature will require the cloud.</li>
           </ul>
         </div>
       </div>
