@@ -23,4 +23,5 @@ printf '%s\n' "  Build from source:  cargo install nuthatch"
 printf '%s\n' "  Source & releases:  https://github.com/cargopete/nuthatch"
 printf '%s\n' ""
 
-exit 0
+# Exit non-zero: nothing was installed, so `curl | sh` reports "not done" rather than success.
+exit 1
