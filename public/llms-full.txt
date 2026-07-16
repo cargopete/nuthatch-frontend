@@ -138,6 +138,35 @@ freshness caveat plainly — derived views read finalized data, raw event tables
 tip — and notes that a GraphQL layer for subgraph-shaped clients is on the roadmap. Do not infer
 customers, quotes, or benchmark numbers from it.
 
+## Roadmap (/roadmap)
+
+The page at https://www.nuthatch-indexer.com/roadmap is generated from the source repo, not from
+memory. The README's working-now table and progress log are the source of truth for what is
+shipped; the numbered RFCs under `docs/rfcs/` are the source of truth for what is planned; where
+the README and the page disagree, the README wins. Reading key: shipped = merged with tests and,
+where relevant, a measured number; in progress = partially landed, remainder tracked; planned = an
+RFC written in the repo, not yet started; not planned = a deliberate scope decision. Dates are not
+promised — order is.
+
+- Shipped: the embedded single-binary pipeline end to end (multi-contract ABI-driven decode of
+  every declared event, reorg-safe hot store, finality-sealed content-addressed Parquet, DuckDB
+  SQL, an i128 DBSP balance view with restart-replay, HTTP + an 8-tool offline MCP server); nests
+  (`init --from`, vendored ABIs + deploy blocks, schema versioning, `views/*.sql`, the
+  `nuthatch check` parity framework); Ethereum mainnet + Arbitrum One with finality as policy;
+  measured backfill throughput (~289 → 2,521 → 5,837 ev/s on public RPC, ~20× over baseline,
+  byte-identical segments); pure zero-capability WASM transforms; a CI RAM-budget gate with a
+  measured footprint (~37 MB single contract, ~58 MB three-contract 23-table nest, 2.8% of 2 GB).
+- In progress: reth ExEx wiring (RFC-0003, needs a synced node); the Horizon nest parity (RFC-0002);
+  remaining backfill work — adaptive chunking + own-node tier numbers (RFC-0004).
+- Planned: v0.1.0 release engineering (RFC-0005 — signed artifacts, real install.sh, crate, tap);
+  the compliance pack (RFC-0008); and deferred items marked "RFC to come" (scaled Postgres +
+  DataFusion mode, effectful transform worlds + signed manifests, a governed semantic layer + NL
+  queries, a GraphQL compatibility layer, IVM generalisation, multi-chain, factories/dynamic
+  discovery, a local admin UI + webhooks, wildcard indexing + open-lakehouse docs). RFC-0006/0007
+  (grants, launch) are process, not product.
+- Not planned: a hosted service, billing, multi-tenancy, a token or decentralized-network
+  features, telemetry of any kind, a Kubernetes-first deployment.
+
 ## Install (pre-release)
 
 - No published binaries yet; the shell installer (`curl -fsSL https://nuthatch-indexer.com/install.sh | sh`)
@@ -158,6 +187,7 @@ attestation or zero-knowledge proofs.
 - Install: https://www.nuthatch-indexer.com/install
 - Design preview: https://www.nuthatch-indexer.com/example
 - Who runs Nuthatch (personas): https://www.nuthatch-indexer.com/stories
+- Roadmap: https://www.nuthatch-indexer.com/roadmap
 - Manifesto: https://www.nuthatch-indexer.com/manifesto
 - Source, docs, discussions: https://github.com/cargopete/nuthatch
 - Licence: AGPL-3.0-only

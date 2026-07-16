@@ -1,0 +1,195 @@
+<!-- Regenerate against the repo README + docs/rfcs when either changes materially.
+     Ground-truth rule: README wins over this page. -->
+---
+import Layout from '../layouts/Layout.astro';
+
+const REPO = 'https://github.com/cargopete/nuthatch';
+const RFCS = {
+  '0001': '0001-generalized-decode-and-nests.md',
+  '0002': '0002-horizon-nest.md',
+  '0003': '0003-reth-exex-tip-mode.md',
+  '0004': '0004-backfill-throughput.md',
+  '0005': '0005-release-engineering-v0.1.0.md',
+  '0006': '0006-grant-funding.md',
+  '0007': '0007-launch-and-validation.md',
+  '0008': '0008-compliance-pack.md',
+};
+const rfc = (n) => `${REPO}/blob/main/docs/rfcs/${RFCS[n]}`;
+const rfcsDir = `${REPO}/tree/main/docs/rfcs`;
+const progressLog = `${REPO}#progress-log`;
+---
+<Layout
+  path="/roadmap"
+  title="Roadmap — Nuthatch"
+  description="What is shipped, in progress, and planned in Nuthatch, generated from the repo README's working-now table, the progress log, and the numbered RFCs. Dates are not promised; order is."
+>
+  <section class="page">
+    <article class="wrap narrow prose">
+      <p class="section-label">Roadmap</p>
+      <h1>Roadmap</h1>
+
+      <p>
+        Nuthatch plans in public. The work is numbered as RFCs in the repository, the
+        progress log carries one entry per push, and the load-bearing claims come with a
+        measured number rather than a promise. This page is the map over that ground.
+      </p>
+      <p>
+        The reading key is plain. <strong>Shipped</strong> means merged with tests and, where
+        it matters, a measured number. <strong>In progress</strong> means partially landed,
+        with the remainder tracked. <strong>Planned</strong> means an RFC written in the
+        repository, not yet started. <strong>Not planned</strong> means exactly that. Dates
+        are not promised — order is.
+      </p>
+
+      <!-- SHIPPED -->
+      <h2 class="stat s-shipped">Shipped</h2>
+      <p class="grp">The embedded single-binary pipeline, end to end</p>
+      <ul class="rl">
+        <li><code>init</code> resolves each contract ABI (Sourcify, then an Etherscan-class API, with EIP-1967 and legacy-OZ proxy resolution) and scaffolds the nest.</li>
+        <li>Deterministic decode of every declared event of every contract — a topic0-keyed registry, one table per <code>{'{'}alias{'}'}__{'{'}event{'}'}</code>.</li>
+        <li>Reorg self-healing: block-hash checkpoints roll the hot store back; a proptest asserts convergence with the winning branch.</li>
+        <li>Finality-gated, content-addressed Parquet sealing, with the hot store pruned once every table's segment is durable.</li>
+        <li>Read-only analytical SQL over sealed segments (DuckDB), plus <code>GET /tables</code> and <code>GET /table/{'{'}name{'}'}</code> merging hot and cold.</li>
+        <li>Balance view maintained incrementally (DBSP): i128 base units, a reorg is a retraction, and it replays from stored facts on restart.</li>
+        <li>Serving over HTTP and MCP: the MCP server speaks stdio with 8 tools, fully offline.</li>
+      </ul>
+
+      <p class="grp">Nests</p>
+      <ul class="rl">
+        <li><code>init --from &lt;git-url | ./dir&gt;</code> — a nest is a git repo, so there is no registry; the vendored ABIs and deployment blocks travel with it.</li>
+        <li>A schema-version guard rejects a nest declaring a newer format, which is what makes consuming a third party's nest safe.</li>
+        <li><code>views/*.sql</code> derived entities load in sorted filename order over the per-event tables.</li>
+        <li><code>nuthatch check</code> runs a nest's <code>checks/*.sql</code> against recorded fixtures — the generic parity and invariant framework, hermetic in CI.</li>
+      </ul>
+
+      <p class="grp">Chains</p>
+      <ul class="rl">
+        <li>Ethereum mainnet (64-block depth finality) and Arbitrum One (chain 42161), the L2 reading its L1-aware <code>finalized</code> tag with a depth fallback — finality is a data-entry policy, not a fork of the loop.</li>
+      </ul>
+
+      <p class="grp">Backfill throughput, measured</p>
+      <ul class="rl">
+        <li><code>nuthatch bench backfill</code> reports the median of events per second, wall-clock, peak RSS and RPC requests; every published number traces to a report artifact.</li>
+        <li>Seal-direct plus pipelined fetching moved a fixed USDC workload from ≈289 to 2,521 to 5,837 events/sec on public RPC — about 20× over the redb baseline.</li>
+        <li>Path-equivalence holds: a given block range yields byte-identical segments regardless of the storage path, proven by test.</li>
+      </ul>
+
+      <p class="grp">WASM transforms</p>
+      <ul class="rl">
+        <li>Pure <code>wasm32-wasip2</code> components load with zero capabilities, so purity is checkable from a component's imports alone; the call boundary is a whole Arrow batch.</li>
+      </ul>
+
+      <p class="grp">CI and footprint</p>
+      <ul class="rl">
+        <li>A CI footprint job fails the build above 256 MB of RAM.</li>
+        <li>Measured peak: ≈37 MB for a single contract, ≈58 MB across a three-contract, 23-table nest — 2.8% of the 2 GB budget.</li>
+      </ul>
+
+      <!-- IN PROGRESS -->
+      <h2 class="stat s-progress">In progress</h2>
+      <ul class="rl">
+        <li>
+          reth ExEx wiring (<a href={rfc('0003')} rel="noopener">RFC-0003</a>): the <code>Source</code>
+          trait, the library split, and the push-to-pull bridge are in and tested, and the toolchain
+          and reth dependency-resolution blockers are cleared. Wiring the ExEx needs a synced node.
+        </li>
+        <li>
+          The Horizon nest (<a href={rfc('0002')} rel="noopener">RFC-0002</a>): three real Arbitrum
+          contracts with derived views compute on live data (390 active allocations, 5 indexers,
+          70,030 GRT in rewards). The remaining work is full parity against the deployed subgraph
+          through <code>nuthatch check</code> fixtures.
+        </li>
+        <li>
+          Backfill throughput (<a href={rfc('0004')} rel="noopener">RFC-0004</a>): the bench harness,
+          seal-direct, and pipelined fetching have landed; adaptive chunking and the own-node tier
+          numbers remain.
+        </li>
+      </ul>
+
+      <!-- PLANNED -->
+      <h2 class="stat s-planned">Planned</h2>
+      <ul class="rl">
+        <li>
+          <a href={rfc('0005')} rel="noopener">RFC-0005</a> — release engineering for v0.1.0: signed
+          artifacts, a real <code>install.sh</code>, a published crate, and a Homebrew tap. This is
+          what makes the install command on this site end-to-end true for a stranger on a fresh machine.
+        </li>
+        <li>
+          <a href={rfc('0008')} rel="noopener">RFC-0008</a> — the compliance pack: list-as-data
+          screening kept out of the data path, retraction-correct flags, direct exposure, and
+          audit-grade reproducibility. So a stablecoin or fintech operator can replay every decision.
+        </li>
+        <li>Scaled mode <span class="rfc-todo">(RFC to come)</span> — a Postgres hot store and DataFusion federating hot and cold behind one SQL surface.</li>
+        <li>Effectful transform worlds with signed pipeline manifests <span class="rfc-todo">(RFC to come)</span> — outputs are append-only annotations, never mutations of core entities.</li>
+        <li>A governed semantic layer with natural-language queries <span class="rfc-todo">(RFC to come)</span> — the model reads a schema, not a guess.</li>
+        <li>A GraphQL compatibility layer <span class="rfc-todo">(RFC to come)</span> — for subgraph-shaped clients.</li>
+        <li>IVM generalisation <span class="rfc-todo">(RFC to come)</span> — derived views are DuckDB SQL over sealed data today.</li>
+        <li>Multi-chain beyond mainnet and Arbitrum One <span class="rfc-todo">(RFC to come)</span>.</li>
+        <li>Factories and dynamic contract discovery <span class="rfc-todo">(RFC to come)</span> — for Uniswap-class protocols; a candidate for the v0.1 gate.</li>
+        <li>A local admin UI and webhooks <span class="rfc-todo">(RFC to come)</span> — sealed-by-default deliveries with honest retractions.</li>
+        <li>Wildcard, signature-scoped indexing and the open-lakehouse docs <span class="rfc-todo">(RFC to come)</span> — your warehouse reads the Parquet directly, with no ETL step.</li>
+      </ul>
+      <p class="grp-note">
+        <a href={rfc('0006')} rel="noopener">RFC-0006</a> (grant funding) and
+        <a href={rfc('0007')} rel="noopener">RFC-0007</a> (launch and validation) track how the
+        project sustains itself and goes public — process, not product.
+      </p>
+
+      <!-- NOT PLANNED -->
+      <h2 class="stat s-none">Not planned</h2>
+      <ul class="rl">
+        <li>A hosted service, billing, or multi-tenancy.</li>
+        <li>A token or decentralized-network features.</li>
+        <li>Telemetry of any kind.</li>
+        <li>A Kubernetes-first deployment.</li>
+      </ul>
+      <p class="grp-note">
+        These are design decisions, not gaps — the project's scope rules explain why.
+      </p>
+
+      <hr class="divider close-div" />
+      <p class="signoff">
+        The <a href={progressLog} rel="noopener">progress log</a> in the README is the change-log
+        of record, and it moves faster than this page. Where this page and the log disagree, trust
+        the log — and read the <a href={rfcsDir} rel="noopener">RFCs</a> for the reasoning behind
+        each line.
+      </p>
+    </article>
+  </section>
+</Layout>
+
+<style>
+  .page { padding-block: clamp(3rem, 6vw, 4.5rem) clamp(4rem, 9vw, 6.5rem); }
+  .prose h1 { margin-bottom: 1.4rem; line-height: 1.12; }
+  .prose p { color: var(--text-muted); font-size: 1.05rem; line-height: 1.72; margin-bottom: 1.3rem; }
+  .prose p:first-of-type { color: var(--text); }
+
+  /* status section headings with a minimal CSS dot */
+  .stat {
+    margin-top: 2.8rem; margin-bottom: 1rem; font-size: 1.5rem;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .stat::before {
+    content: ''; width: 0.6rem; height: 0.6rem; border-radius: 50%;
+    background: var(--dot); flex-shrink: 0;
+  }
+  .s-shipped  { --dot: var(--ok); }
+  .s-progress { --dot: var(--warn); }
+  .s-planned  { --dot: var(--accent); }
+  .s-none     { --dot: var(--text-faint); }
+
+  .grp {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-faint);
+    margin: 1.6rem 0 0.7rem !important;
+  }
+  .rl { margin: 0 0 0.4rem; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+  .rl li { color: var(--text-muted); font-size: 0.98rem; line-height: 1.55; padding-left: 1.2rem; position: relative; }
+  .rl li::before { content: '·'; position: absolute; left: 0.3rem; color: var(--accent); font-weight: 700; }
+  .rl code { font-size: 0.84em; }
+  .rfc-todo { color: var(--text-faint); font-family: 'JetBrains Mono', monospace; font-size: 0.78em; }
+  .grp-note { font-size: 0.9rem !important; color: var(--text-faint) !important; margin-top: 0.9rem !important; }
+  .close-div { margin-block: 2.8rem 1.8rem; }
+  .signoff { color: var(--text) !important; }
+</style>
+</content>
