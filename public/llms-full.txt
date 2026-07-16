@@ -164,8 +164,8 @@ promised — order is.
   queries, a GraphQL compatibility layer, IVM generalisation, multi-chain, factories/dynamic
   discovery, a local admin UI + webhooks, wildcard indexing + open-lakehouse docs). RFC-0006/0007
   (grants, launch) are process, not product.
-- Not planned: a hosted service, billing, multi-tenancy, a token or decentralized-network
-  features, telemetry of any kind, a Kubernetes-first deployment.
+- Not planned: a token or decentralized-network features, telemetry of any kind, a
+  Kubernetes-first deployment.
 
 ## Install (pre-release)
 

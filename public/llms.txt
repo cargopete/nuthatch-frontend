@@ -89,8 +89,8 @@ table and progress log are the source of truth for what is shipped, and the numb
 `docs/rfcs/` for what is planned. It groups work as shipped (merged, tested, with a measured
 number where one exists), in progress (reth ExEx wiring RFC-0003, the Horizon nest RFC-0002,
 remaining backfill RFC-0004), planned (v0.1.0 release RFC-0005, the compliance pack RFC-0008, and
-deferred items marked "RFC to come"), and explicitly not planned (a hosted service, billing,
-multi-tenancy, a token, telemetry, Kubernetes-first). It promises order, not dates, and defers to
+deferred items marked "RFC to come"), and explicitly not planned (a token,
+telemetry, Kubernetes-first). It promises order, not dates, and defers to
 the README progress log when the two disagree.
 
 ## Links
