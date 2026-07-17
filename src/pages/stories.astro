@@ -60,6 +60,19 @@ const mcpConfig = `{
         illustrative. See the <a href="/roadmap">roadmap</a> for the dividing line.
       </p>
 
+      <div class="in-production">
+        <h2>Live in production: Lodestar</h2>
+        <p>
+          Not illustrative - this one is real. <a href="https://lodestar-dashboard.com" rel="noopener">Lodestar</a>,
+          an analytics dashboard for The Graph Protocol on Arbitrum One, serves some of its panels
+          from a single nuthatch binary on one small VPS instead of The Graph gateway. Today the
+          <strong>Delegation Activity</strong> feed (HorizonStaking delegation events) and the
+          <strong>Developer Activity</strong> chart (L2GNS subgraph publishes) come through nuthatch -
+          each proven byte-for-byte against the subgraph before cutover, each one more panel that no
+          longer depends on a third-party data API.
+        </p>
+      </div>
+
       <!-- STORY 1 -->
       <h2>A dapp backend</h2>
       <p>
@@ -171,6 +184,14 @@ const mcpConfig = `{
     margin-bottom: 1rem;
   }
   .preview-note strong { color: var(--text); }
+  .in-production {
+    background: var(--pale-rust-bg); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent, #6aa84f); border-radius: var(--radius);
+    padding: 0.4rem 1.2rem 1rem; margin: 1.5rem 0 2rem;
+  }
+  .in-production h2 { margin-top: 0.8rem; }
+  .in-production p { color: var(--text-muted); margin-bottom: 0; }
+  .in-production strong { color: var(--text); }
   .prose :global(.codecard) { margin-bottom: 1.4rem; }
   .note { font-size: 0.92rem; color: var(--text-faint); }
   .seg { margin-block: 2.6rem; }
