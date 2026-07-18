@@ -1,0 +1,83 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+<Layout
+  path={`/blog/${post.id}`}
+  title={`${post.data.title} - Nuthatch`}
+  description={post.data.description}
+>
+  <section class="page">
+    <article class="wrap narrow prose">
+      <a href="/blog" class="back">← Blog</a>
+      <h1>{post.data.title}</h1>
+      <p class="meta">
+        <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
+        <span aria-hidden="true"> · </span>{post.data.author}
+      </p>
+      <Content />
+    </article>
+  </section>
+</Layout>
+
+<style>
+  .page { padding-block: clamp(2.4rem, 5vw, 3.6rem) clamp(4rem, 9vw, 6.5rem); }
+  .back {
+    display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+    color: var(--text-muted); margin-bottom: 1.6rem;
+  }
+  .back:hover { color: var(--text); text-decoration: none; }
+  .meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+    color: var(--text-muted); margin: 0.5rem 0 2.4rem;
+  }
+  h1 { margin-bottom: 0.4rem; letter-spacing: -0.025em; }
+
+  /* Markdown body — matches the manifesto's prose, extended to headings, lists, code and quotes. */
+  .prose :global(p) { color: var(--text-muted); font-size: 1.06rem; line-height: 1.75; margin-bottom: 1.35rem; }
+  .prose :global(h2) {
+    font-size: 1.5rem; letter-spacing: -0.02em; color: var(--text);
+    margin: 2.8rem 0 1rem; line-height: 1.25;
+  }
+  .prose :global(h3) {
+    font-size: 1.15rem; letter-spacing: -0.01em; color: var(--text);
+    margin: 2rem 0 0.75rem;
+  }
+  .prose :global(a) { color: var(--accent); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+  .prose :global(a:hover) { border-bottom-color: var(--accent); }
+  .prose :global(strong) { color: var(--text); font-weight: 600; }
+  .prose :global(em) { font-style: italic; }
+  .prose :global(ul), .prose :global(ol) { color: var(--text-muted); font-size: 1.06rem; line-height: 1.7; margin: 0 0 1.35rem; padding-left: 1.3rem; }
+  .prose :global(li) { margin-bottom: 0.5rem; }
+  .prose :global(li::marker) { color: var(--text-faint, var(--text-muted)); }
+  .prose :global(hr) { border: none; border-top: 1px solid var(--border); margin: 2.6rem 0; }
+  .prose :global(blockquote) {
+    margin: 1.6rem 0; padding: 0.4rem 0 0.4rem 1.2rem;
+    border-left: 3px solid var(--rust); color: var(--text-muted); font-style: italic;
+  }
+  .prose :global(blockquote p) { margin-bottom: 0.5rem; }
+
+  /* Inline code + Shiki code blocks. */
+  .prose :global(code) {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.86em;
+    background: color-mix(in srgb, var(--text) 8%, transparent);
+    padding: 0.12em 0.36em; border-radius: 5px;
+  }
+  .prose :global(pre) {
+    background: var(--code-bg, #0d0c0b); border: 1px solid var(--border); border-radius: var(--radius, 10px);
+    padding: 1rem 1.1rem; overflow-x: auto; margin: 0 0 1.5rem; font-size: 0.85rem; line-height: 1.6;
+  }
+  .prose :global(pre code) { background: none; padding: 0; border-radius: 0; font-size: inherit; }
+  .prose :global(p:first-of-type) { color: var(--text); }
+</style>

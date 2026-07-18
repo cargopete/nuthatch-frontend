@@ -1,0 +1,68 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+<Layout
+  path="/blog"
+  title="Blog - Nuthatch"
+  description="Field notes from running Nuthatch: real deployments, war stories, and how a self-hosted indexer holds up serving a live product."
+>
+  <section class="page">
+    <div class="wrap narrow">
+      <p class="section-label">Blog</p>
+      <h1>Field notes</h1>
+      <p class="lede">
+        Real deployments and the scar tissue from them - what it's actually like to run your own
+        indexer in production.
+      </p>
+
+      {posts.length === 0 ? (
+        <p class="empty">Nothing here yet.</p>
+      ) : (
+        <ul class="posts">
+          {posts.map((p) => (
+            <li>
+              <a href={`/blog/${p.id}/`}>
+                <time datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time>
+                <h2>{p.data.title}</h2>
+                <p>{p.data.description}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page { padding-block: clamp(3rem, 6vw, 4.5rem) clamp(4rem, 9vw, 6.5rem); }
+  h1 { margin-bottom: 0.8rem; }
+  .lede { color: var(--text-muted); font-size: 1.08rem; line-height: 1.7; margin-bottom: 2.6rem; max-width: 46ch; }
+  .empty { color: var(--text-muted); }
+  .posts { list-style: none; margin: 0; padding: 0; }
+  .posts li { border-top: 1px solid var(--border); }
+  .posts li:last-child { border-bottom: 1px solid var(--border); }
+  .posts a {
+    display: block; padding: 1.5rem 0; color: inherit;
+    transition: opacity 0.16s var(--ease);
+  }
+  .posts a:hover { text-decoration: none; opacity: 0.9; }
+  .posts time {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;
+    color: var(--text-muted); letter-spacing: 0.02em;
+  }
+  .posts h2 {
+    font-size: 1.32rem; letter-spacing: -0.02em; margin: 0.35rem 0 0.5rem;
+    color: var(--text); transition: color 0.16s var(--ease);
+  }
+  .posts a:hover h2 { color: var(--accent); }
+  .posts p { color: var(--text-muted); font-size: 0.98rem; line-height: 1.65; margin: 0; max-width: 62ch; }
+</style>
