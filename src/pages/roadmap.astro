@@ -1,8 +1,10 @@
 <!-- Regenerate against the repo README + docs/rfcs when either changes materially.
      Ground-truth rule: README / progress log wins over this page.
-     Last regenerated against the progress log through the v0.1.0 release and the
-     RFC-0005 operator surface. Keep it product-neutral: describe the binary, not any
-     deployment or commercial arrangement. -->
+     Last regenerated against the progress log through the v0.3.0 release: RFC-0008
+     (compliance pack), RFC-0009 (factories), RFC-0010 (admin UI + webhooks) all shipped;
+     RFC-0011 (Lodestar) pilot live in production; RFC-0012 (nest packaging) partial.
+     Keep it product-neutral: describe the binary, not any deployment or commercial
+     arrangement. -->
 ---
 import Layout from '../layouts/Layout.astro';
 
@@ -16,6 +18,12 @@ const RFCS = {
   '0006': '0006-grant-funding.md',
   '0007': '0007-launch-and-validation.md',
   '0008': '0008-compliance-pack.md',
+  '0009': '0009-factory-and-dynamic-contract-discovery.md',
+  '0010': '0010-admin-ui-and-webhooks.md',
+  '0011': '0011-graph-network-nest-lodestar-migration.md',
+  '0012': '0012-multi-nest-runtime-and-nest-packaging.md',
+  '0013': '0013-storage-and-query-engine-direction.md',
+  '0014': '0014-firehose-class-extraction-traces-and-state.md',
 };
 const rfc = (n) => `${REPO}/blob/main/docs/rfcs/${RFCS[n]}`;
 const rfcsDir = `${REPO}/tree/main/docs/rfcs`;
@@ -55,7 +63,7 @@ const progressLog = `${REPO}#progress-log`;
         <li>Finality-gated, content-addressed Parquet sealing, with the hot store pruned once every table's segment is durable.</li>
         <li>Read-only analytical SQL over sealed segments (DuckDB), plus <code>GET /tables</code> and <code>GET /table/{'{'}name{'}'}</code> merging hot and cold - the full data model.</li>
         <li>Balance view maintained incrementally (DBSP): i128 base units serialised as decimal strings, a reorg is a retraction, and it replays from stored facts on restart.</li>
-        <li>Serving over HTTP and MCP: the MCP server speaks stdio with 8 tools, fully offline.</li>
+        <li>Serving over HTTP and MCP: the MCP server speaks stdio with 11 tools, fully offline.</li>
       </ul>
 
       <p class="grp">Nests</p>
@@ -90,11 +98,39 @@ const progressLog = `${REPO}#progress-log`;
       <p class="grp">WASM transforms</p>
       <ul class="rl">
         <li>Pure <code>wasm32-wasip2</code> components load with zero capabilities, so purity is checkable from a component's imports alone; the call boundary is a whole Arrow batch.</li>
+        <li>Effectful stages take per-component capability grants (<code>kv</code> today), with imports checked against the grant at load; their output is append-only annotations, never mutations of core entities.</li>
+      </ul>
+
+      <p class="grp">Factories and dynamic discovery (<a href={rfc('0009')} rel="noopener">RFC-0009</a>)</p>
+      <ul class="rl">
+        <li><code>[[templates]]</code> and <code>[[factories]]</code> index the child contracts a factory deploys at runtime - tip, backfill, and reorg-safe, with a <code>{'{'}template{'}'}__children</code> view. It indexes Uniswap.</li>
+        <li>The discovered set flips from an address list to a topic0 filter at scale, so a factory with thousands of children stays a single deterministic getLogs stream.</li>
+      </ul>
+
+      <p class="grp">Compliance pack (<a href={rfc('0008')} rel="noopener">RFC-0008</a>)</p>
+      <ul class="rl">
+        <li>Sanctions screening: content-addressed list snapshots × a zero-capability WASM component seal replayable <code>sanction_hit</code> annotations; <code>nuthatch screen</code> and MCP <code>screen_status</code> answer "was this address flagged, against which list version?".</li>
+        <li>Threshold and velocity flags (per-transfer annotations plus a DBSP windowed velocity view, i128, reorg = retraction), served at <code>/flags</code>.</li>
+        <li>Direct counterparty-exposure view (DBSP) over content-addressed label snapshots, served at <code>/exposure/{'{'}addr{'}'}</code>.</li>
+        <li>Alert webhooks POST flag and hit annotations at-least-once through a durable outbox that never blocks the indexer.</li>
+        <li>Signed compliance-pack manifest (<code>pack build</code>/<code>verify</code>, ed25519) plus <code>audit replay</code>/<code>report</code> re-prove the sealed annotations by construction.</li>
+      </ul>
+
+      <p class="grp">Admin UI and webhooks (<a href={rfc('0010')} rel="noopener">RFC-0010</a>)</p>
+      <ul class="rl">
+        <li>A built-in admin UI at <code>/_admin/</code> - embedded, no framework or CDN: status, table browser, SQL runner, and nest inspector, read-only and localhost-gated.</li>
+        <li>User webhooks: <code>[[webhooks]]</code> POST sealed rows matching a <code>where</code> clause to a URL through the shared at-least-once outbox; <code>since</code> suppresses backfill history.</li>
+        <li>Signed webhook egress: a webhook <code>secret</code> signs each delivery with <code>X-Nuthatch-Signature: sha256=&lt;hmac&gt;</code> over the exact bytes sent.</li>
+      </ul>
+
+      <p class="grp">Nest packaging (<a href={rfc('0012')} rel="noopener">RFC-0012</a>)</p>
+      <ul class="rl">
+        <li><code>nuthatch nest pack</code> bundles a nest's authored inputs into a content-addressed blob whose hash is a Merkle root over a canonical manifest; <code>nest mount</code> verifies and installs one, regenerating the decode registry from the installed inputs and asserting it matches the author's pinned hash - determinism carried across the wire, not just the disk.</li>
       </ul>
 
       <p class="grp">Release and footprint</p>
       <ul class="rl">
-        <li>v0.1.0 is tagged and published to crates.io, with prebuilt binaries on the GitHub release; <code>cargo install</code> builds on rustc 1.95 or newer.</li>
+        <li>v0.3.0 is the current release, tagged and published to crates.io, with prebuilt binaries on the GitHub release; <code>cargo install</code> builds on rustc 1.95 or newer.</li>
         <li>A CI footprint job fails the build above 256 MB of RAM.</li>
         <li>Measured peak: ≈37 MB for a single contract, ≈58 MB across a three-contract, 23-table nest - 2.8% of the 2 GB budget.</li>
       </ul>
@@ -103,15 +139,21 @@ const progressLog = `${REPO}#progress-log`;
       <h2 class="stat s-progress">In progress</h2>
       <ul class="rl">
         <li>
-          The Horizon nest (<a href={rfc('0002')} rel="noopener">RFC-0002</a>): three real Arbitrum
-          contracts with derived views compute on live data (390 active allocations, 5 indexers,
-          70,030 GRT in rewards). The remaining work is full parity fixtures against the deployed
-          community subgraph through <code>nuthatch check</code>.
+          The graph-network nest and Lodestar migration (<a href={rfc('0011')} rel="noopener">RFC-0011</a>):
+          the pilot is live in production - two of a public dashboard's panels serve from a single
+          nuthatch binary instead of The Graph gateway, each parity-checked before cutover
+          (<a href="/stories">the story is here</a>). The wedge is proven; migrating the remaining
+          panels and publishing the full graph-network nest is the outstanding work.
+        </li>
+        <li>
+          The multi-nest roost runtime (<a href={rfc('0012')} rel="noopener">RFC-0012</a>): the
+          content-addressed <code>nest pack</code>/<code>mount</code> round-trip ships today; the roost
+          - two nests under one cursor in one process - is next.
         </li>
         <li>
           reth ExEx wiring (<a href={rfc('0003')} rel="noopener">RFC-0003</a>): the <code>Source</code>
           trait, the library split, and the push-to-pull bridge are in and tested, and rustc 1.95
-          satisfies both reth 2.4 and dbsp - the toolchain and dependency blockers are cleared.
+          satisfies both reth and dbsp - the toolchain and dependency blockers are cleared.
           Wiring the ExEx needs a synced node.
         </li>
       </ul>
@@ -121,39 +163,24 @@ const progressLog = `${REPO}#progress-log`;
       <ul class="rl">
         <li>
           <a href={rfc('0005')} rel="noopener">RFC-0005</a> - the remaining release engineering:
-          signed artifacts, a real <code>install.sh</code>, a Homebrew tap, and an OCI image. The
-          v0.1.0 tag itself is out; this is what makes the install command on this site end-to-end
-          true for a stranger on a fresh machine.
-        </li>
-        <!-- TODO: link RFC-0009 once committed to the repo -->
-        <li>
-          RFC-0009 <span class="rfc-todo">(RFC to come)</span> - factory and dynamic contract
-          discovery: index the child contracts a factory deploys at runtime (Uniswap-class
-          protocols), with a reorg-safe child registry and a deterministic discovered set.
-        </li>
-        <!-- TODO: link RFC-0011 once committed to the repo -->
-        <li>
-          RFC-0011 <span class="rfc-todo">(RFC to come)</span> - the graph-network nest and the
-          Lodestar migration: extend the Horizon nest to the Graph Protocol contract suite on
-          Arbitrum One; Lodestar, the maintainer's dashboard, migrates to Nuthatch data panel by
-          panel, each parity-checked against the network subgraph.
-        </li>
-        <!-- TODO: link RFC-0010 once committed to the repo -->
-        <li>
-          RFC-0010 <span class="rfc-todo">(RFC to come)</span> - a local admin UI and webhooks: a
-          built-in, local-only UI (table browser, SQL runner, status page) compiled into the binary,
-          and outbound webhooks with sealed-by-default deliveries and honest retractions.
+          signed artifacts, a Homebrew tap, and an OCI image. The releases and the one-line installer
+          are out; signing and the extra channels are what harden the trust path.
         </li>
         <li>
-          <a href={rfc('0008')} rel="noopener">RFC-0008</a> - the compliance pack: pure screening
-          against content-addressed list snapshots, threshold and velocity flags, and an
-          <code>audit replay</code> reproducible by construction.
+          Scaled mode (<a href={rfc('0013')} rel="noopener">RFC-0013</a>) - a Postgres hot store and a
+          DataFusion query layer federating hot and cold behind one SQL surface. The direction is
+          recorded; embedded DuckDB stays the default until a benchmark justifies the move.
         </li>
-        <li>Scaled mode <span class="rfc-todo">(RFC to come)</span> - a Postgres hot store and DataFusion federating hot and cold behind one SQL surface.</li>
-        <li>Effectful transform worlds with signed pipeline manifests <span class="rfc-todo">(RFC to come)</span> - outputs are append-only annotations, never mutations of core entities.</li>
-        <li>A governed semantic layer with natural-language queries <span class="rfc-todo">(RFC to come)</span> - the model reads a schema, not a guess.</li>
+        <li>
+          reth ExEx tip mode (<a href={rfc('0003')} rel="noopener">RFC-0003</a>) - in-process
+          tip-following against a colocated node, and then firehose-class extraction of traces and
+          state diffs (<a href={rfc('0014')} rel="noopener">RFC-0014</a>), both gated on wiring the
+          ExEx to a synced node.
+        </li>
         <li>A GraphQL compatibility layer <span class="rfc-todo">(RFC to come)</span> - for subgraph-shaped clients.</li>
-        <li>IVM generalisation <span class="rfc-todo">(RFC to come)</span> - derived views are DuckDB SQL over sealed data today.</li>
+        <li>A governed semantic layer with natural-language queries <span class="rfc-todo">(RFC to come)</span> - the model reads a schema, not a guess.</li>
+        <li>IVM generalisation <span class="rfc-todo">(RFC to come)</span> - lift more derived views from DuckDB SQL over sealed data into incrementally-maintained views.</li>
+        <li>Effectful HTTP egress for transform worlds <span class="rfc-todo">(RFC to come)</span> - a <code>wasi:http</code> sandboxed variant beyond today's <code>kv</code> capability grant.</li>
         <li>Wildcard, signature-scoped indexing <span class="rfc-todo">(RFC to come)</span> - index an event by its signature across every emitter.</li>
       </ul>
 

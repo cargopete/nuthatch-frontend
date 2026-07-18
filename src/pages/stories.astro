@@ -38,7 +38,7 @@ const mcpConfig = `{
 <Layout
   path="/stories"
   title="Who runs Nuthatch - Nuthatch"
-  description="Three workflows through Nuthatch's three front doors: an SQL endpoint for app backends, published nests for analysts, and a built-in MCP server for agents. Illustrative personas, running on v0.1.0; only the GraphQL layer is still on the roadmap."
+  description="Three workflows through Nuthatch's three front doors: an SQL endpoint for app backends, published nests for analysts, and a built-in MCP server for agents. Illustrative personas, running on v0.3.0; a GraphQL compatibility layer is the main piece still on the roadmap."
 >
   <section class="page">
     <article class="wrap narrow prose">
@@ -50,26 +50,33 @@ const mcpConfig = `{
         nests for people who want data without writing indexing code, and a built-in MCP
         server for agents. Same binary, same data, one process on your own hardware.
       </p>
-      <p class="illus">Illustrative workflows, not customer stories - Nuthatch is early v0.1.0 software.</p>
+      <p class="illus">Illustrative workflows, not customer stories - Nuthatch is early v0.3.0 software.</p>
 
       <p class="preview-note">
-        <strong>These workflows run on v0.1.0.</strong> Multi-contract nests, every declared event
+        <strong>These workflows run on v0.3.0.</strong> Multi-contract nests, every declared event
         as a queryable table, Arbitrum One and Base, user-authored <code>views/*.sql</code>,
-        <code>init --from</code>, read-only <code>/sql</code>, and the MCP server all ship today. The
-        one forward-looking piece is the GraphQL layer, noted where it appears; the personas are
+        <code>init --from</code>, read-only <code>/sql</code>, and the MCP server all ship today - as
+        do factories, the compliance pack, the admin UI, and webhooks. The main forward-looking piece
+        for these stories is the GraphQL layer, noted where it appears; the personas are
         illustrative. See the <a href="/roadmap">roadmap</a> for the dividing line.
       </p>
 
       <div class="in-production">
         <h2>Live in production: Lodestar</h2>
         <p>
-          Not illustrative - this one is real. <a href="https://lodestar-dashboard.com" rel="noopener">Lodestar</a>,
-          an analytics dashboard for The Graph Protocol on Arbitrum One, serves some of its panels
-          from a single nuthatch binary on one small VPS instead of The Graph gateway. Today the
-          <strong>Delegation Activity</strong> feed (HorizonStaking delegation events) and the
-          <strong>Developer Activity</strong> chart (L2GNS subgraph publishes) come through nuthatch -
-          each proven byte-for-byte against the subgraph before cutover, each one more panel that no
-          longer depends on a third-party data API.
+          Not illustrative - this one is real. <a href="https://www.lodestar-dashboard.com" rel="noopener">Lodestar</a>,
+          an analytics dashboard for The Graph Protocol on Arbitrum One, serves two of its panels
+          from a single nuthatch binary on one small box instead of The Graph gateway. The
+          <strong>Delegation Activity</strong> feed (HorizonStaking delegation events) comes through
+          byte-for-byte identical to the subgraph; the <strong>Developer Activity</strong> chart
+          (L2GNS subgraph publishes) tracks it within a documented ~0-1%. Both run flag-gated, with
+          automatic fallback to the old gateway - two panels that no longer depend on a third-party
+          data API.
+        </p>
+        <p class="prod-box">
+          The box: two nests, backfilled and serving live, in <strong>86 MB of RAM</strong> on one
+          Hetzner VPS - Caddy for TLS, path-routed to one URL. The footprint budget is 2 GB.
+          <a href="/blog/serving-lodestar-from-one-box">The full write-up is on the blog.</a>
         </p>
       </div>
 
@@ -191,6 +198,7 @@ const mcpConfig = `{
   }
   .in-production h2 { margin-top: 0.8rem; }
   .in-production p { color: var(--text-muted); margin-bottom: 0; }
+  .in-production .prod-box { margin-top: 1rem; font-size: 0.95rem; color: var(--text-faint); }
   .in-production strong { color: var(--text); }
   .prose :global(.codecard) { margin-bottom: 1.4rem; }
   .note { font-size: 0.92rem; color: var(--text-faint); }
