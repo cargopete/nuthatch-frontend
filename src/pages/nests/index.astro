@@ -13,7 +13,7 @@ const groups = [
   {
     key: 'available',
     title: 'Available now',
-    blurb: 'Works today. Generated straight from a contract address — no repo to clone.',
+    blurb: 'Installable today — from a published nest repo, or generated straight from a contract address.',
     items: all.filter((n) => n.data.status === 'available').sort(byTier),
   },
   {
@@ -59,7 +59,7 @@ const tierLabel = (t: number) => (t === 0 ? 'Tier 0 · beachhead' : `Tier ${t}`)
         <div class="how-cmds">
           <div>
             <span class="how-cap">From a published nest</span>
-            <CopyBlock command="nuthatch init --from https://github.com/nuthatch-indexer/&lt;nest&gt;" />
+            <CopyBlock command="nuthatch init --from https://github.com/nuthatch-indexer/graph-network-nest" />
           </div>
           <div>
             <span class="how-cap">Or straight from an address</span>
@@ -104,9 +104,16 @@ const tierLabel = (t: number) => (t === 0 ? 'Tier 0 · beachhead' : `Tier ${t}`)
                   {n.data.chains.map((c) => <span class="chain">{c}</span>)}
                 </div>
 
-                {n.data.command && (
+                {n.data.repo ? (
+                  <div class="cmd">
+                    <CopyBlock command={`nuthatch init --from ${n.data.repo}`} size="md" />
+                    <a class="repolink" href={n.data.repo} rel="noopener">
+                      {n.data.repo.replace('https://github.com/', '')} ↗
+                    </a>
+                  </div>
+                ) : n.data.command ? (
                   <div class="cmd"><CopyBlock command={n.data.command} size="md" /></div>
-                )}
+                ) : null}
 
                 {n.data.note && <p class="note">{n.data.note}</p>}
               </li>
@@ -217,6 +224,12 @@ const tierLabel = (t: number) => (t === 0 ? 'Tier 0 · beachhead' : `Tier ${t}`)
   }
 
   .cmd { margin-top: 1rem; }
+  .repolink {
+    display: inline-block; margin-top: 0.5rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+  .repolink:hover { color: var(--accent); }
   .note {
     margin: 0.95rem 0 0; padding-top: 0.85rem; border-top: 1px solid var(--border);
     font-size: 0.82rem; line-height: 1.55; color: var(--text-faint);

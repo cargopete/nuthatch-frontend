@@ -1,5 +1,5 @@
 import { defineCollection, z } from 'astro:content';
-import { glob, file } from 'astro/loaders';
+import { glob } from 'astro/loaders';
 
 // Blog posts live as Markdown under src/content/blog. Static build, Shiki-highlighted code, no
 // client runtime — same rules as the rest of the site.
@@ -15,10 +15,20 @@ const blog = defineCollection({
   }),
 });
 
-// The nest catalogue — structured data, not prose, so it lives as one JSON file. Each entry is a
-// prebuilt nest (or a planned one); the /nests page renders them grouped by honest status.
+// The nest catalogue. Single source of truth is the org's index repo — the site fetches it at
+// build time, so the page and the index can't drift. Build-time only: nothing ships to the client,
+// and a failed fetch fails the build loudly (the last good deploy stays live).
+const NESTS_INDEX =
+  'https://raw.githubusercontent.com/nuthatch-indexer/nests/main/index.json';
 const nests = defineCollection({
-  loader: file('./src/content/nests.json'),
+  loader: async () => {
+    const res = await fetch(NESTS_INDEX);
+    if (!res.ok) {
+      throw new Error(`nests index fetch failed: ${res.status} ${res.statusText} (${NESTS_INDEX})`);
+    }
+    const data = (await res.json()) as { nests: Array<{ id: string }> };
+    return data.nests; // each entry carries its own `id`
+  },
   schema: z.object({
     name: z.string(),
     category: z.string(),
