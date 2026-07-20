@@ -42,7 +42,7 @@ const fmt = (d: Date) =>
     font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
     color: var(--text-muted); margin: 0.5rem 0 2.4rem;
   }
-  h1 { margin-bottom: 0.4rem; letter-spacing: -0.025em; }
+  h1 { font-size: clamp(1.9rem, 4vw, 2.8rem); line-height: 1.1; margin-bottom: 0.4rem; letter-spacing: -0.025em; }
 
   /* Markdown body — matches the manifesto's prose, extended to headings, lists, code and quotes. */
   .prose :global(p) { color: var(--text-muted); font-size: 1.06rem; line-height: 1.75; margin-bottom: 1.35rem; }
