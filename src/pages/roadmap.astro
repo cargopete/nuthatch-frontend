@@ -169,8 +169,9 @@ const progressLog = `${REPO}#progress-log`;
           the pilot is live in production - two of a public dashboard's panels serve from a single
           nuthatch binary instead of The Graph gateway, each parity-checked before cutover
           (<a href="/stories">the story is here</a>). The <a href="https://github.com/nuthatch-indexer/horizon-nest" rel="noopener">published <code>horizon-nest</code></a>
-          carries the Horizon staking/service surface; migrating the remaining panels (Indexer
-          Directory, Curation, Epochs) into it is the outstanding work.
+          carries the Horizon staking/service surface; the migration is parked after the proven pilot,
+          with the remaining panels (Indexer Directory, Curation, Epochs) folded into
+          <code>horizon-nest</code> as they're needed rather than as a second nest.
         </li>
         <li>
           reth ExEx wiring (<a href={rfc('0003')} rel="noopener">RFC-0003</a>): the <code>Source</code>

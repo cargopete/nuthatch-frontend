@@ -2,7 +2,7 @@
 // The data path, as a flow diagram. Horizontal on wide screens, stacking on
 // mobile (the arrows rotate). Inline SVG arrow marks, palette-aware.
 const stages = [
-  { k: 'source',  t: 'chain',              s: 'RPC · reth ExEx' },
+  { k: 'source',  t: 'chain',              s: 'RPC · reth ExEx (planned)' },
   { k: 'decode',  t: 'deterministic decode', s: 'topic0-keyed, versioned' },
   { k: 'views',   t: 'incremental views',  s: 'IVM · reorgs = retractions' },
   { k: 'store',   t: 'redb + Parquet',     s: 'hot tip · sealed segments' },
