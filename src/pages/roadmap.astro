@@ -32,6 +32,7 @@ const RFCS = {
   '0018': '0018-what-a-nest-is-authored-logic-and-composable-nests.md',
   '0019': '0019-nest-registry-and-distribution.md',
   '0020': '0020-nest-lifecycle-and-the-n-1-upgrade.md',
+  '0021': '0021-the-multichain-roost.md',
 };
 const rfc = (n) => `${REPO}/blob/main/docs/rfcs/${RFCS[n]}`;
 const rfcsDir = `${REPO}/tree/main/docs/rfcs`;
@@ -166,6 +167,11 @@ const progressLog = `${REPO}#progress-log`;
       <p class="grp">Safe upgrades - no resync tax (<a href={rfc('0020')} rel="noopener">RFC-0020</a>)</p>
       <ul class="rl">
         <li><code>nuthatch nest diff &lt;old&gt; &lt;new&gt;</code> classifies a nest update: <em>compatible</em> (additive only - a new table or column) or <em>breaking</em> (a consumer-observable change - removed, renamed, or retyped). <code>nuthatch nest upgrade --to &lt;new&gt;</code> then handles either kind. A <strong>compatible</strong> update is hot-swapped with zero downtime - it serves the old version, indexes the new one concurrently, and atomically flips the endpoint the moment the new one catches up, so the served address never changes. A <strong>breaking</strong> update instead serves the new version on a new endpoint (<code>/next</code>) alongside the old - which keeps working, now carrying a <code>Deprecation</code> header - so downstream migrate on their own clock before the old is sunset. Either way, updating a nest stops being a subgraph-style genesis resync. And when a compatible update's decode is unchanged, the new version mounts the old's sealed content-addressed segments instead of re-indexing history at all - a true no-re-index upgrade subgraphs structurally can't do.</li>
+      </ul>
+
+      <p class="grp">Multichain roost (<a href={rfc('0021')} rel="noopener">RFC-0021</a>, in progress)</p>
+      <ul class="rl">
+        <li>A roost can host nests across <strong>more than one chain</strong> in a single runtime - <code>[[chains]]</code> in <code>roost.toml</code>, and one <strong>isolated cursor per chain</strong> (its own tip, finality, and reorg boundary): a Base nest and an Arbitrum nest served from one process. The footprint budget is <strong>per active-chain cursor</strong> (≤2 GB), and any cursor's failure fails the whole roost - one observable boundary, held per chain. A capability, not a mandate: one-chain-per-roost stays the simple default and is byte-identical to running the nest solo. The single-cursor law holds per chain - two chains are never multiplexed behind one cursor.</li>
       </ul>
 
       <p class="grp">Release and footprint</p>
