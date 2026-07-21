@@ -150,7 +150,7 @@ const progressLog = `${REPO}#progress-log`;
 
       <p class="grp">Nest packaging (<a href={rfc('0012')} rel="noopener">RFC-0012</a>)</p>
       <ul class="rl">
-        <li><code>nuthatch nest pack</code> bundles a nest's authored inputs into a content-addressed blob whose hash is a Merkle root over a canonical manifest; <code>nest mount</code> verifies and installs one, regenerating the decode registry from the installed inputs and asserting it matches the author's pinned hash - determinism carried across the wire, not just the disk.</li>
+        <li><code>nuthatch nest bundle</code> packs a nest's authored inputs into a single portable, content-addressed <code>.bundle</code> file whose hash is a Merkle root over a canonical manifest; <code>nest load</code> verifies and installs one - from a local file or an <code>http(s)</code> URL - regenerating the decode registry from the installed inputs and asserting it matches the author's pinned hash. Determinism carried across the wire, not just the disk.</li>
         <li><code>nuthatch roost</code> - one runtime hosts several nests on the same chain under a single cursor, one hot store, and one finality view, with strict per-nest isolation and a per-runtime RSS budget: a mount whose projection exceeds the budget is refused before it starts. Verified live on Arbitrum.</li>
       </ul>
 

@@ -49,8 +49,8 @@ obstacle has been the operational weight of the tooling, which is an engineering
    blocks, schema-version guarded); authored `views/*.sql` (RFC-0018) are a validated, drift-gated
    layer (each binds against the schema at load, so a moved column is a loud `nuthatch check` failure,
    described in `semantic.toml`, surfaced in `/schema`); `nuthatch check` also runs `checks/*.sql`
-   against recorded fixtures. `nuthatch nest pack`/`mount` build and verify a content-addressed nest
-   blob, and `nuthatch roost` runs several nests on one chain in a single process under one shared
+   against recorded fixtures. `nuthatch nest bundle`/`load` build and verify a content-addressed,
+   portable nest `.bundle` (loadable from a file or a URL), and `nuthatch roost` runs several nests on one chain in a single process under one shared
    cursor, hot store, and finality view, with per-nest isolation and a per-runtime RSS budget
    (RFC-0012, verified live on Arbitrum).
 4. `nuthatch transform <component.wasm>` - runs a pure, zero-capability WASM transform over an Arrow
@@ -197,8 +197,8 @@ promised - order is.
   byte-identical segments); factory/dynamic contract discovery (RFC-0009 - it indexes Uniswap); the
   compliance pack (RFC-0008 complete - screening, threshold/velocity flags, counterparty exposure,
   alert webhooks, signed pack manifest + reproducible `audit replay`); a local admin UI + webhooks
-  with HMAC-signed egress (RFC-0010); content-addressed nest packaging (RFC-0012 - `nest pack`/
-  `mount`); the operator surface (Prometheus `/metrics`, `/sql` guards - timeout, row cap,
+  with HMAC-signed egress (RFC-0010); content-addressed nest packaging (RFC-0012 - `nest bundle`/
+  `load`, a portable `.bundle` loadable from a file or a URL); the operator surface (Prometheus `/metrics`, `/sql` guards - timeout, row cap,
   concurrency - graceful shutdown, a 0.x config-stability contract); pure zero-capability WASM
   transforms plus effectful `kv`-capability stages; the delightful core (RFC-0015: sql/REPL, magical
   init, add, prod recipes) and the governed semantic layer + agent-grade MCP (RFC-0016/0017); the
