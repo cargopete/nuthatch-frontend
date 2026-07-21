@@ -62,8 +62,8 @@ Tagline: "Be your own indexer."
 - Admin UI and webhooks (RFC-0010): an embedded read-only admin UI at `/_admin/` (no framework/CDN,
   localhost-gated), plus user `[[webhooks]]` that POST sealed rows matching a `where` clause,
   HMAC-signed with `X-Nuthatch-Signature`.
-- Nest packaging and the roost (RFC-0012, complete): `nuthatch nest pack`/`mount` build and verify a
-  content-addressed nest blob, reproducing the decode registry from the installed inputs; `nuthatch
+- Nest packaging and the roost (RFC-0012, complete): `nuthatch nest bundle`/`load` build and verify a
+  content-addressed, portable nest `.bundle` (loadable from a file or an http(s) URL), reproducing the decode registry from the installed inputs; `nuthatch
   roost` runs several nests on one chain in a single process under one shared cursor, hot store, and
   finality view, with strict per-nest isolation and a per-runtime RSS budget. Verified live on Arbitrum.
 - Chains: Ethereum mainnet, Arbitrum One (42161), and Base (8453), with finality as a per-chain
