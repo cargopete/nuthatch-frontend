@@ -1,10 +1,10 @@
 ---
-title: "The Graph put Nuthatch in their hackathon bounty. We found out from the prize page."
-description: "ETHGlobal Lisbon's $7,000 Best AI Tooling track names Nuthatch as an accepted data backend, alongside Subgraph Studio. Nobody warned us. What it means, and a field guide for anyone building on the bird this weekend."
+title: "The Graph put Nuthatch in their hackathon bounty"
+description: "ETHGlobal Lisbon's $7,000 Best AI Tooling track names Nuthatch as an accepted data backend, alongside Subgraph Studio. What it means, and a field guide for anyone building on the bird this weekend."
 date: 2026-07-22
 ---
 
-*ETHGlobal Lisbon runs this weekend, July 24–26. The Graph is sponsoring $15,000 across three tracks, and their biggest one — Best AI Tooling for The Graph, $7,000 — names Nuthatch twice: once as a suggested project, and once in the qualification requirements as an accepted data backend, alongside Subgraph Studio and The Graph Market. Nobody warned us. This post is what that means, what we make of it, and a field guide for anyone in Lisbon who decides to build on the bird.*
+*ETHGlobal Lisbon runs this weekend, July 24–26. The Graph is sponsoring $15,000 across three tracks, and their biggest one — Best AI Tooling for The Graph, $7,000 — names Nuthatch twice: once as a suggested project, and once in the qualification requirements as an accepted data backend, alongside Subgraph Studio and The Graph Market. This post is what that means, what we make of it, and a field guide for anyone in Lisbon who decides to build on the bird.*
 
 ---
 
@@ -12,7 +12,7 @@ date: 2026-07-22
 
 Buried in the AI Tooling track's example projects is this: a project built on Nuthatch, extending its MCP tools, adding new SKILLs, or wiring its output into an agent workflow. That's flattering, but examples are cheap — sponsors list a dozen and mean maybe three.
 
-The qualification requirements are the part that made us put the coffee down. The rule is that submitted tooling must work against live blockchain data, and the accepted sources are a Graph provider *or* "a self-hosted indexer such as Nuthatch." That's not an example; that's eligibility. A team can build their entire $7,000 submission against a local nuthatch binary, no gateway, no API key, and qualify. Someone at The Graph wrote that sentence on purpose.
+The qualification requirements are the part that matters. The rule is that submitted tooling must work against live blockchain data, and the accepted sources are a Graph provider *or* "a self-hosted indexer such as Nuthatch." That's not an example; that's eligibility. A team can build their entire $7,000 submission against a local nuthatch binary, no gateway, no API key, and qualify. Someone at The Graph wrote that sentence on purpose.
 
 ## The part where we acknowledge the elephant
 
