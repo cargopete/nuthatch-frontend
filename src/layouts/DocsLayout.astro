@@ -32,8 +32,9 @@ const groups = GROUPS.map((g) => ({
 <Layout path={`/docs/${slug}`} title={`${title} - Nuthatch docs`} description={description}>
   <section class="docs">
     <div class="wrap docs-grid">
-      <!-- Mobile: a native <details> disclosure; desktop: an always-open sticky column. -->
-      <details class="docs-nav">
+      <!-- Open by default; on desktop it's a fixed always-open column (not collapsible), on mobile a
+           native <details> disclosure the reader can fold away. -->
+      <details class="docs-nav" open>
         <summary>
           <span class="docs-nav-label">Documentation</span>
           <span class="docs-nav-current">{title}</span>
@@ -68,7 +69,8 @@ const groups = GROUPS.map((g) => ({
 
   /* Sidebar (desktop: sticky column; the <details> chrome is neutralised). */
   .docs-nav { position: sticky; top: 74px; align-self: start; max-height: calc(100vh - 90px); overflow-y: auto; }
-  .docs-nav > summary { list-style: none; cursor: default; }
+  /* Desktop: the summary is inert — the nav can't be collapsed, and stays open. */
+  .docs-nav > summary { list-style: none; cursor: default; pointer-events: none; }
   .docs-nav > summary::-webkit-details-marker { display: none; }
   .docs-nav-label {
     display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
@@ -134,7 +136,8 @@ const groups = GROUPS.map((g) => ({
       border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-elev);
     }
     .docs-nav > summary {
-      cursor: pointer; padding: 0.8rem 1rem; display: flex; flex-direction: column; gap: 0.15rem;
+      cursor: pointer; pointer-events: auto; padding: 0.8rem 1rem;
+      display: flex; flex-direction: column; gap: 0.15rem;
     }
     .docs-nav-label { margin: 0; }
     .docs-nav-current { display: block; color: var(--text); font-weight: 600; font-size: 0.95rem; }
