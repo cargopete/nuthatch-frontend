@@ -5,31 +5,31 @@ order: 1
 ---
 
 `nuthatch dev` *is* the serve command: it backfills, follows the tip, and serves the HTTP API on
-`127.0.0.1:8288` (change with `--listen`). There is no separate server to deploy — a nest that's
+`127.0.0.1:8288` (change with `--listen`). There is no separate server to deploy - a nest that's
 indexing is a nest that's serving.
 
 ## The surface
 
 Three kinds of read, one process:
 
-- **Point-reads** — `/entity/{id}`, `/balance/{address}`: sub-millisecond lookups against the redb
+- **Point-reads** - `/entity/{id}`, `/balance/{address}`: sub-millisecond lookups against the redb
   hot store.
-- **Analytical SQL** — `/sql?q=…`: read-only DuckDB queries over the live tip ∪ sealed history.
+- **Analytical SQL** - `/sql?q=…`: read-only DuckDB queries over the live tip ∪ sealed history.
   Every event is a view named `{alias}__{event}`. See [The SQL surface](/docs/reference/sql/).
-- **Introspection** — `/`, `/tables`, `/schema`, `/nest`, `/metrics`: what this nest is, what it
+- **Introspection** - `/`, `/tables`, `/schema`, `/nest`, `/metrics`: what this nest is, what it
   holds, and how it's doing.
 
 The full route list is in the [HTTP API reference](/docs/reference/http-api/).
 
 ## The guards
 
-`/sql` is guarded so a bad query can't take the node down — these are self-protection, not knobs to
+`/sql` is guarded so a bad query can't take the node down - these are self-protection, not knobs to
 raise:
 
 - **30-second timeout** per query. A runaway is interrupted, not left to spin.
 - **50,000-row cap** per result (requests can ask for less via `max_rows`; the MCP bridge asks for
   much less so an agent's context isn't flooded).
-- **2 concurrent analytical queries.** A third gets a `503` — retry, don't remove the gate.
+- **2 concurrent analytical queries.** A third gets a `503` - retry, don't remove the gate.
 - **SELECT/WITH only.** The query surface is read-only by construction; the ingest thread is the
   only writer.
 
@@ -47,7 +47,7 @@ its progress, and a restart resumes cleanly.
 
 ## The admin UI
 
-Every nest serves a built-in, read-only dashboard at `/_admin/` — a single self-contained page
+Every nest serves a built-in, read-only dashboard at `/_admin/` - a single self-contained page
 embedded in the binary. It talks only to the same-origin API and loads **no external resources**:
 no CDN, no fonts, no analytics. Live activity streams over server-sent events from
 `/_admin/events`.
@@ -56,7 +56,7 @@ Access follows the exposure rule:
 
 - **On localhost** the page is open.
 - **Off localhost** it requires `NUTHATCH_ADMIN_TOKEN` to be set *and* each request to present it
-  as `?token=…` — otherwise the routes self-disable with a log line. The comparison is
+  as `?token=…` - otherwise the routes self-disable with a log line. The comparison is
   constant-time, so the token can't be recovered through a timing side-channel.
 - `--no-admin` removes the routes entirely, for hosted deployments fronting their own dashboard.
 

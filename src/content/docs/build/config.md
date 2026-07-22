@@ -1,12 +1,12 @@
 ---
 title: nuthatch.toml
-description: The one config file a nest has — the [nest] header and one or more [[contracts]].
+description: The one config file a nest has - the [nest] header and one or more [[contracts]].
 order: 1
 ---
 
 A nest has exactly one config file: `nuthatch.toml`. `init` generates it from a contract address; you
 edit it to add contracts, events, factories, and the optional compliance and webhook stages. Everything
-else in a nest (`schema.json`, `llms.txt`) is *derived* from it — regenerate with `nuthatch schema`.
+else in a nest (`schema.json`, `llms.txt`) is *derived* from it - regenerate with `nuthatch schema`.
 
 ## The shape
 
@@ -40,7 +40,7 @@ One block per contract. Repeat it to index many contracts in one nest.
 
 | Field | Meaning |
 | --- | --- |
-| `alias` | Short name — the table prefix (`{alias}__{event}`). |
+| `alias` | Short name - the table prefix (`{alias}__{event}`). |
 | `address` | The contract address. |
 | `start_block` | Deployment block (auto-detected at `init`); omit to backfill from a recent tip offset. |
 | `abi` | Path to the vendored ABI, relative to the nest dir. |
@@ -54,14 +54,14 @@ One block per contract. Repeat it to index many contracts in one nest.
 
 `nuthatch.toml` also carries the optional layers, each documented on its own page:
 
-- `[[templates]]` + `[[factories]]` — index dynamically discovered children. See [Factories](/docs/build/factories/).
-- `[screening]` + `[flags]` + `[[alerts]]` — the compliance pack. See [Compliance pack](/docs/build/compliance/).
-- `[[webhooks]]` — POST sealed rows to a URL. See [Webhooks](/docs/build/webhooks/).
+- `[[templates]]` + `[[factories]]` - index dynamically discovered children. See [Factories](/docs/build/factories/).
+- `[screening]` + `[flags]` + `[[alerts]]` - the compliance pack. See [Compliance pack](/docs/build/compliance/).
+- `[[webhooks]]` - POST sealed rows to a URL. See [Webhooks](/docs/build/webhooks/).
 
-Absent stages cost nothing — a nest with none of them is a plain, fast log indexer.
+Absent stages cost nothing - a nest with none of them is a plain, fast log indexer.
 
 ## Next
 
-- [ABIs, events &amp; tables](/docs/build/tables/) — how config becomes SQL tables
-- [Authored SQL views](/docs/build/views/) — add derived logic
-- [Configuration reference](/docs/reference/config/) — every field, `nuthatch.toml` and `roost.toml`
+- [ABIs, events &amp; tables](/docs/build/tables/) - how config becomes SQL tables
+- [Authored SQL views](/docs/build/views/) - add derived logic
+- [Configuration reference](/docs/reference/config/) - every field, `nuthatch.toml` and `roost.toml`

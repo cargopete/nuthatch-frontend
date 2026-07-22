@@ -10,13 +10,13 @@ list.
 
 ## Backfill seems stuck
 
-The most common cause is high `--concurrency` against a **single** RPC endpoint — many concurrent
+The most common cause is high `--concurrency` against a **single** RPC endpoint - many concurrent
 requests to one host can stall the whole run. Use `--concurrency 1` for one endpoint, or configure
-several `rpc_urls` (then 8–16 is fine). Watch `nuthatch_rows_decoded_total` and
+several `rpc_urls` (then 8-16 is fine). Watch `nuthatch_rows_decoded_total` and
 `nuthatch_last_block` climb; on a TTY, `dev` shows a live progress line with events/sec and an ETA,
 and a frozen line is the concurrency stall above.
 
-A *sparse* contract over millions of blocks isn't stuck, just inefficient — each window comes back
+A *sparse* contract over millions of blocks isn't stuck, just inefficient - each window comes back
 near-empty. Widen it: `--window 50000` turns tens of thousands of near-empty requests into a few.
 Keep the window under your provider's `getLogs` block-range cap; the concurrent backfill fails a
 too-big range loudly rather than silently shrinking it.
@@ -30,22 +30,22 @@ looping forever.
 ## Tip lag
 
 `nuthatch_tip_lag_blocks` is the gap between the chain head and your last indexed block
-(`nuthatch_sealed_through` trails further — past finality, by design). Persistent growth means RPC
+(`nuthatch_sealed_through` trails further - past finality, by design). Persistent growth means RPC
 throughput, not nuthatch: add endpoints or point at your own node. The adaptive `getLogs` window
 self-tunes for density.
 
 ## Reorgs
 
-Reorgs only ever touch the **hot store** — sealed segments are immutable, and you should never see
+Reorgs only ever touch the **hot store** - sealed segments are immutable, and you should never see
 sealed data change. `nuthatch_reorgs_total` counts detections; the hot store rolls back and the IVM
 views retract automatically, converging to canonical state. If a plan seems to require rewriting
-sealed Parquet to "fix" a reorg, the plan is wrong — the hot store already handled it.
+sealed Parquet to "fix" a reorg, the plan is wrong - the hot store already handled it.
 
 ## `/sql` returns 503 or times out
 
-- **503 "server busy"** — the analytical gate is saturated (2 concurrent). It's node
+- **503 "server busy"** - the analytical gate is saturated (2 concurrent). It's node
   self-protection: retry, don't raise the cap.
-- **30 s timeout** — the query is too heavy. Add a `WHERE`/`LIMIT`, aggregate with `GROUP BY`, or
+- **30 s timeout** - the query is too heavy. Add a `WHERE`/`LIMIT`, aggregate with `GROUP BY`, or
   validate cheaply with [`/explain`](/docs/reference/http-api/) first.
 - **Binder and parse errors come back with a fix hint** derived from the real schema: an unknown
   table suggests the nearest real one, `from`/`to` suggests double-quoting, `sum(value)` suggests
@@ -60,7 +60,7 @@ if you're tight, lower query concurrency rather than the per-query cap.
 
 ## "semantic.toml drift" warnings at startup
 
-`semantic.toml` describes a table or column the decode registry doesn't have — a stale edit, or the
+`semantic.toml` describes a table or column the decode registry doesn't have - a stale edit, or the
 ABI changed. Fix the file or run `nuthatch schema` to regenerate the derived artifacts; the
 footguns are always recomputed, and only the authored descriptions are yours to maintain. Stale
 semantics are worse than none, so `dev` warns loudly.
@@ -69,5 +69,5 @@ semantics are worse than none, so `dev` warns loudly.
 
 `init` tries Sourcify, then Etherscan-class APIs. If both miss (an unverified contract), drop the
 ABI into `abis/` yourself and reference it from `nuthatch.toml`, or pass `--rpc <url>` so a proxy's
-implementation can be looked up on-chain — EIP-1967 proxies resolve their implementation ABI
+implementation can be looked up on-chain - EIP-1967 proxies resolve their implementation ABI
 automatically.

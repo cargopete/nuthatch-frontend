@@ -5,7 +5,7 @@ order: 5
 ---
 
 One SQL surface spans both stores: the live unsealed tip (redb) and the sealed Parquet history,
-unioned as DuckDB views. You never think about the seam — a query over `usdc__transfer` sees every
+unioned as DuckDB views. You never think about the seam - a query over `usdc__transfer` sees every
 row from deployment to the block indexed a moment ago. Reach it via `nuthatch sql` (a REPL when
 called with no query), `GET /sql`, or the MCP `sql` tool.
 
@@ -31,7 +31,7 @@ Two footguns, both machine-tracked in [`semantic.toml`](/docs/build/semantic/):
   directly. Every big-int column gets a derived **`*_dec`** sibling (`value_dec`) for arithmetic:
   `sum(value_dec)`, `value_dec > 1e6`.
 
-Get either wrong and the error comes back with a fix hint derived from the real schema — the
+Get either wrong and the error comes back with a fix hint derived from the real schema - the
 binder knows the nearest table name, the quoting rule, and the `_dec` convention.
 
 ## Semantics & guards
@@ -41,7 +41,7 @@ binder knows the nearest table name, the quoting rule, and the `_dec` convention
 - **Deterministic and finality-aware.** Sealed segments are immutable; only the hot tip can change
   under a reorg, and the union converges with it.
 - **Guarded:** a 30-second timeout, a row cap, and 2 concurrent analytical queries. A rejection is
-  the node protecting itself — narrow the query rather than fighting the guard. Validate cheaply
+  the node protecting itself - narrow the query rather than fighting the guard. Validate cheaply
   first with `explain`.
 - **Provenance-stamped.** Results carry the block range and the content-addressed segment hashes
   they were computed from, so a number can be cited against immutable data and re-derived by

@@ -4,15 +4,15 @@ description: "The machine-readable index scaffolded projects ship for coding age
 order: 2
 ---
 
-Every nest `init` scaffolds includes an `llms.txt` — a one-page, plain-text index of the project
+Every nest `init` scaffolds includes an `llms.txt` - a one-page, plain-text index of the project
 written for coding agents. An agent that lands in the directory (or fetches the file from a served
-nest) learns in one read what this thing is, what data it holds, and how to query it — without
+nest) learns in one read what this thing is, what data it holds, and how to query it - without
 crawling the source.
 
 ## What's in it
 
-Generated from the decode registry — the same source of truth behind `schema.json`, `/tables`, and
-the MCP `schema` tool — it contains:
+Generated from the decode registry - the same source of truth behind `schema.json`, `/tables`, and
+the MCP `schema` tool - it contains:
 
 - **What this is**: a self-hosted blockchain index on `<chain>`; query it locally, there is no
   third-party API.
@@ -27,12 +27,12 @@ the MCP `schema` tool — it contains:
 
 - **Generated, not authored.** `init` and `add` both write it; `nuthatch schema` regenerates it
   (with `schema.json` and the `semantic.toml` footguns) after you hand-edit the config. Don't
-  maintain it by hand — it always reflects the tables the config actually produces.
+  maintain it by hand - it always reflects the tables the config actually produces.
 - **Pinned in the bundle.** A nest's `llms.txt` is part of its content-addressed inputs, so a
   published nest carries its own agent documentation, verified by hash like everything else in
   [the registry](/docs/operate/registry/).
 
-Alongside `llms.txt`, `init` also scaffolds a per-nest `.claude/skills/nuthatch` querying skill —
+Alongside `llms.txt`, `init` also scaffolds a per-nest `.claude/skills/nuthatch` querying skill -
 the deeper counterpart for agents that support skills. The distinction from
 [the builder skill](/docs/ai/builder-skill/): the scaffolded skill teaches an agent to *query this
 nest*; the builder skill teaches an agent to *drive nuthatch*.

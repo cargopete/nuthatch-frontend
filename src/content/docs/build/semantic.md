@@ -6,7 +6,7 @@ order: 4
 
 A schema tells you a column is named `value` and typed `uint256`. It doesn't tell you that `value` is
 denominated in the token's smallest unit, that you have to divide by `10**decimals`, or that `from`
-being the zero address means a mint. That knowledge — the **meaning** — is what separates a correct
+being the zero address means a mint. That knowledge - the **meaning** - is what separates a correct
 query from a plausible-looking wrong one.
 
 Nuthatch keeps that meaning in a **semantic layer**: a `semantic.toml` beside the nest, surfaced through
@@ -14,12 +14,12 @@ Nuthatch keeps that meaning in a **semantic layer**: a `semantic.toml` beside th
 
 ## What it captures
 
-- **Table and column descriptions** — plain-English meaning, beyond the type.
-- **Units and scaling** — "amounts are in wei; divide by `10**decimals`" — so an agent doesn't hand you
+- **Table and column descriptions** - plain-English meaning, beyond the type.
+- **Units and scaling** - "amounts are in wei; divide by `10**decimals`" - so an agent doesn't hand you
   a number 10¹⁸ too big.
-- **Footguns** — the sharp edges: zero-address-means-mint, fee-on-transfer tokens, a `value` that's
+- **Footguns** - the sharp edges: zero-address-means-mint, fee-on-transfer tokens, a `value` that's
   actually shares not assets. Every gotcha that produces a confidently wrong answer.
-- **View meanings** — what each [authored view](/docs/build/views/) computes and when to reach for it.
+- **View meanings** - what each [authored view](/docs/build/views/) computes and when to reach for it.
 
 ## Why it exists
 
@@ -34,13 +34,13 @@ scale by decimals and exclude mints.
 
 ## Generated, then curated
 
-`init` seeds `semantic.toml` from the ABI — types, obvious units, the decimals footgun for anything that
+`init` seeds `semantic.toml` from the ABI - types, obvious units, the decimals footgun for anything that
 looks like a token. You curate from there: add the domain knowledge only you have. It's checked and
 drift-gated like everything else, so a description that references a dropped column fails
 `nuthatch check`.
 
 ## Next
 
-- [Authored SQL views](/docs/build/views/) — the logic the semantic layer describes
-- [MCP server](/docs/ai/mcp/) — how agents consume the semantic layer
-- [llms.txt](/docs/ai/llms-txt/) — the other half of the AI surface
+- [Authored SQL views](/docs/build/views/) - the logic the semantic layer describes
+- [MCP server](/docs/ai/mcp/) - how agents consume the semantic layer
+- [llms.txt](/docs/ai/llms-txt/) - the other half of the AI surface

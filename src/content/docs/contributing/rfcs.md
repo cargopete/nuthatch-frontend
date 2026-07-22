@@ -1,6 +1,6 @@
 ---
 title: "RFCs"
-description: "The numbered design record — every decision, what shipped, what's deferred."
+description: "The numbered design record - every decision, what shipped, what's deferred."
 order: 2
 ---
 
@@ -12,39 +12,39 @@ progress log; measured numbers are cited, and targets are labeled as targets, ne
 
 ## The series
 
-- **0001 Generalized decode & nests** *(Implemented)* — the foundation: multi-contract nests, the
+- **0001 Generalized decode & nests** *(Implemented)* - the foundation: multi-contract nests, the
   decode registry.
-- **0002 The Horizon nest** *(Implemented)* — the first real-world nest.
-- **0003 reth ExEx tip mode** *(Accepted; deferred)* — colocated-node ingestion.
-- **0004 Backfill throughput** *(Implemented)* — measure first, optimise second; seal-direct.
-- **0005 Release engineering** *(Implemented)* — the v0.1.0 bar and beyond.
-- **0006 Grant funding** / **0007 Launch & validation** *(Accepted; process)* — the non-engineering
+- **0002 The Horizon nest** *(Implemented)* - the first real-world nest.
+- **0003 reth ExEx tip mode** *(Accepted; deferred)* - colocated-node ingestion.
+- **0004 Backfill throughput** *(Implemented)* - measure first, optimise second; seal-direct.
+- **0005 Release engineering** *(Implemented)* - the v0.1.0 bar and beyond.
+- **0006 Grant funding** / **0007 Launch & validation** *(Accepted; process)* - the non-engineering
   record.
-- **0008 The compliance pack** *(Implemented)* — labels, lists, screening, flags, exposure, the
+- **0008 The compliance pack** *(Implemented)* - labels, lists, screening, flags, exposure, the
   signed audit pack.
-- **0009 Factories** *(Implemented)* — dynamic child-contract discovery.
-- **0010 Admin UI & webhooks** *(Implemented)* — ease-of-use parity.
-- **0011 The graph-network nest** *(Parked after pilot)* — the wedge proven in prod.
-- **0012 Multi-nest runtime & packaging** *(Implemented)* — roosts and content-addressed bundles.
-- **0013 Storage & query-engine direction** *(Accepted)* — the DuckDB union shipped; DataFusion
+- **0009 Factories** *(Implemented)* - dynamic child-contract discovery.
+- **0010 Admin UI & webhooks** *(Implemented)* - ease-of-use parity.
+- **0011 The graph-network nest** *(Parked after pilot)* - the wedge proven in prod.
+- **0012 Multi-nest runtime & packaging** *(Implemented)* - roosts and content-addressed bundles.
+- **0013 Storage & query-engine direction** *(Accepted)* - the DuckDB union shipped; DataFusion
   convergence gated.
-- **0014 Firehose-class extraction** *(Draft; deferred)* — traces and state diffs via ExEx.
-- **0015 The delightful core** *(Implemented)* — the REPL, magical init, live feedback, `add`, the
+- **0014 Firehose-class extraction** *(Draft; deferred)* - traces and state diffs via ExEx.
+- **0015 The delightful core** *(Implemented)* - the REPL, magical init, live feedback, `add`, the
   MCP one-liner.
-- **0016 The semantic layer & agent-grade MCP** *(Implemented)* — `semantic.toml`, errors-as-
+- **0016 The semantic layer & agent-grade MCP** *(Implemented)* - `semantic.toml`, errors-as-
   prompts, `explain`, result shaping, resources & prompts, the eval harness.
-- **0017 The builder skill** *(Implemented)* — the generated, drift-gated CLI reference.
-- **0018 What a nest is** *(§1 implemented; §2 retired; §3 deferred)* — authored SQL views;
+- **0017 The builder skill** *(Implemented)* - the generated, drift-gated CLI reference.
+- **0018 What a nest is** *(§1 implemented; §2 retired; §3 deferred)* - authored SQL views;
   the Starlark front-end, retired.
-- **0019 The nest registry** *(Implemented)* — publish and pull by `name@version`.
-- **0020 Nest lifecycle & the N-1 upgrade** *(Implemented)* — `diff`, hot-swap, deprecation,
+- **0019 The nest registry** *(Implemented)* - publish and pull by `name@version`.
+- **0020 Nest lifecycle & the N-1 upgrade** *(Implemented)* - `diff`, hot-swap, deprecation,
   segment reuse. The resync tax, killed.
-- **0021 The multichain roost** *(Accepted; slice 1 shipped)* — one runtime, one isolated cursor
+- **0021 The multichain roost** *(Accepted; slice 1 shipped)* - one runtime, one isolated cursor
   per chain.
-- **0022 Distributed scaled mode** *(Accepted; design only)* — read/write planes for operators.
-- **0023 Contract state, derive-first** *(Accepted; tiers 1–2 shipped)* — the `eth_call` you don't
+- **0022 Distributed scaled mode** *(Accepted; design only)* - read/write planes for operators.
+- **0023 Contract state, derive-first** *(Accepted; tiers 1-2 shipped)* - the `eth_call` you don't
   need: derived-view recipes and the immutable-metadata cache.
-- **0024 The eth_call execution engine** *(Draft)* — a demand-driven state cache, if the residue
+- **0024 The eth_call execution engine** *(Draft)* - a demand-driven state cache, if the residue
   demands it.
 
 ## Conventions

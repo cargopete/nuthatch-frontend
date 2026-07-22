@@ -4,13 +4,13 @@ description: Reorgs only ever touch the mutable hot store; sealed segments are a
 order: 4
 ---
 
-A chain reorg — where the tip you indexed turns out not to be canonical — is the hard part of indexing.
+A chain reorg - where the tip you indexed turns out not to be canonical - is the hard part of indexing.
 Nuthatch handles it with one rule that makes the rest simple.
 
 ## The rule
 
 **Reorgs only ever touch the mutable hot store.** Segments are sealed strictly *past finality*, so the
-columnar layer is append-only and immutable. A reorg can never reach a sealed segment — because a
+columnar layer is append-only and immutable. A reorg can never reach a sealed segment - because a
 segment is only ever written for a range that's already final, and final ranges don't reorg.
 
 ## How a reorg is handled
@@ -21,20 +21,20 @@ ancestor (a range-delete of everything above that block, keyed by `(block, log_i
 the canonical replacement. Rows are idempotent on `(block, log_index)`, so re-indexing is clean.
 
 For declarative views, a reorg is just a **retraction**: the same transfer re-fed to the incremental
-circuit with weight −1. Backfill and tip run the identical circuit — there is no separate reorg code
+circuit with weight −1. Backfill and tip run the identical circuit - there is no separate reorg code
 path. See [Authoring modes](/docs/concepts/authoring/).
 
 ## Sub-finality reorgs halt loudly
 
-If a reorg were to reach *below* the finalized watermark — into data already sealed to immutable
-segments — that's a finality violation this model can't repair. The cursor **halts with an error** rather
+If a reorg were to reach *below* the finalized watermark - into data already sealed to immutable
+segments - that's a finality violation this model can't repair. The cursor **halts with an error** rather
 than silently corrupt. In practice this never fires on a correctly-configured finality depth; when it
 does, it's telling you the chain did something the finality assumption didn't allow.
 
 ## Per-cursor isolation
 
 In a multichain roost, a reorg on one chain touches only that chain's cursor. Another chain's data is
-left **byte-identical** — a property that's tested, not merely asserted. See
+left **byte-identical** - a property that's tested, not merely asserted. See
 [Roosts &amp; cursors](/docs/concepts/roosts/).
 
 ## Guarantees
@@ -45,5 +45,5 @@ handling is deterministic and re-executable, like everything feeding stored stat
 
 ## Next
 
-- [Determinism](/docs/concepts/determinism/) — the non-negotiable this rests on
-- [Storage &amp; sealing](/docs/concepts/storage/) — the finality boundary
+- [Determinism](/docs/concepts/determinism/) - the non-negotiable this rests on
+- [Storage &amp; sealing](/docs/concepts/storage/) - the finality boundary

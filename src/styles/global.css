@@ -53,7 +53,7 @@
 
 /* --- Light theme: the taste skill's exact warm-monochrome palette ------ */
 /* Driven by [data-theme='light'] on <html> (set by a tiny inline script from localStorage), so the
-   choice persists across page loads — the one thing a pure-CSS toggle can't do. */
+   choice persists across page loads - the one thing a pure-CSS toggle can't do. */
 :root[data-theme='light'] {
   --bg:          #fbfbfa;
   --bg-elev:     #ffffff;

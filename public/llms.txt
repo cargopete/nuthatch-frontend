@@ -50,7 +50,7 @@ Tagline: "Be your own indexer."
 - `nuthatch transform <component.wasm>` runs a pure, zero-capability WASM transform over an Arrow
   batch. `nuthatch mcp` serves the Model Context Protocol over stdio (12 tools: status, schema,
   tables, table, sql, explain, entity, balance, top_balances, flags, exposure, screen_status; plus 3
-  resources — nuthatch://schema|tables|status — and 3 prompts: profile-contract, investigate-address,
+  resources - nuthatch://schema|tables|status - and 3 prompts: profile-contract, investigate-address,
   verify-a-number), bridging offline to a running instance.
 - Factories and dynamic contract discovery (RFC-0009): `[[templates]]`/`[[factories]]` index the
   child contracts a factory deploys at runtime (it indexes Uniswap), tip + backfill + reorg-safe,
