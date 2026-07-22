@@ -16,11 +16,37 @@ With a nest running (`nuthatch dev`):
 nuthatch mcp --print-config
 ```
 
-This prints a ready-to-paste Claude Code `.mcp.json` and the equivalent `claude mcp add` one-liner.
+This prints a ready-to-paste `.mcp.json` and the equivalent `claude mcp add` one-liner.
 Any MCP client works the same way: the server speaks stdio and bridges to the running instance.
 Then ask questions:
 
 > "What were the ten largest transfers this week, and were any of the senders flagged?"
+
+## Per-client setup
+
+Every client uses the same server entry - only where you put it differs. The entry is:
+
+```json
+{
+  "mcpServers": {
+    "nuthatch": { "command": "nuthatch", "args": ["mcp", "--url", "http://127.0.0.1:8288"] }
+  }
+}
+```
+
+- **Claude Code** - one line, no file editing: `claude mcp add nuthatch -- nuthatch mcp --url http://127.0.0.1:8288`. Or drop the entry into `.mcp.json` at your project root.
+- **Cursor** - paste the entry into `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global).
+- **Claude Desktop** - Settings -> Developer -> Edit Config opens `claude_desktop_config.json`; paste the entry there and restart.
+- **Any other MCP client** - point it at the command `nuthatch mcp --url <your nest>`; the transport is plain stdio.
+
+Use the binary's absolute path (what `nuthatch mcp --print-config` emits) if `nuthatch` isn't on the client's `PATH`.
+
+## An honest tool menu
+
+The tools a nest advertises match what it actually indexes (RFC-0025). A token nest offers `balance`
+and `top_balances`; a nest with compliance configured adds `flags`, `exposure`, and `screen_status`;
+a bare event nest (say a Uniswap pool) offers neither, so an agent is never handed a tool that would
+just answer `{"count":0}`. The menu agrees with the data.
 
 ## Built agent-grade, not agent-tolerant
 

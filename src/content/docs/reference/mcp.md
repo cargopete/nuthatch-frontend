@@ -17,6 +17,10 @@ described in the [HTTP API reference](/docs/reference/http-api/) - an agent gets
 
 ## Tools
 
+The seven generic tools below are advertised on every nest. The capability-gated ones are advertised
+only where they will return data (RFC-0025): `balance`/`top_balances` where the nest has a
+transfer-shaped decoder, and `flags`/`exposure`/`screen_status` where compliance is configured.
+
 - `status` - index status: contract, chain, rows indexed, holders, last and sealed block.
 - `schema` - the data model: how tables and views are named and queried. Read this first.
 - `tables` - every decoded table (`{alias}__{event}`) with columns, Solidity types, and topic0.
