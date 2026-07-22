@@ -46,6 +46,8 @@ progress log; measured numbers are cited, and targets are labeled as targets, ne
   need: derived-view recipes and the immutable-metadata cache.
 - **0024 The eth_call execution engine** *(Draft)* - a demand-driven state cache, if the residue
   demands it.
+- **0025 Adaptive MCP tool advertisement** *(Implemented)* - advertise only the tools a nest can
+  answer, so an agent is never handed an inert tool that returns `{"count":0}`.
 
 ## Conventions
 
