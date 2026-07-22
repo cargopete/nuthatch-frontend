@@ -42,8 +42,9 @@ deliberate choices (RFC-0016):
   re-derives one from scratch.
 
 The tool-by-tool surface - plus the resources and the built-in prompts - is in the
-[MCP reference](/docs/reference/mcp/). The quality bar is held by an eval harness that scores real
-agent sessions against the surface, so regressions in agent experience fail like any other test.
+[MCP reference](/docs/reference/mcp/). A CI-gated eval harness scores a fixed set of questions against
+the query surface (RFC-0016), so regressions in the deterministic path fail like any other test; scoring
+full agent sessions end-to-end is the harness's next tier.
 
 For the authoring side - an agent *building* nests rather than querying one - see
 [The builder skill](/docs/ai/builder-skill/).

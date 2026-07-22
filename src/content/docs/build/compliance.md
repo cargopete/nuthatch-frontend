@@ -34,10 +34,11 @@ url = "https://your-service/alerts"
   Fetch a list first with `nuthatch lists fetch` (built-in `ofac-sdn`, `eu-consolidated`, or your own
   via `--url`/`--file`).
 - **`[flags]`** - two built-in rules, not arbitrary SQL. `threshold` flags any single transfer at or
-  above an amount; `velocity` flags an address whose outbound volume over `velocity_window` **blocks**
-  reaches `velocity_amount`. Matches become **`threshold_flag`** annotations. Amounts are base units as
-  decimal strings; the window is a **block count**, not wall-clock - an honest approximation, since the
-  chain has no clock.
+  above an amount; each match becomes a sealed, append-only **`threshold_flag`** annotation. `velocity`
+  flags an address whose outbound volume over `velocity_window` **blocks** reaches `velocity_amount`;
+  this one is a *live* windowed view (served at `/flags?kind=velocity`), not a sealed annotation - so it
+  isn't deliverable via alerts. Amounts are base units as decimal strings; the window is a **block
+  count**, not wall-clock - an honest approximation, since the chain has no clock.
 - **`[[alerts]]`** - deliver annotations whose `kind` is in `kinds` to a `url`. The only valid kinds are
   `threshold_flag` and `sanction_hit` - they match the emitted annotations exactly.
 

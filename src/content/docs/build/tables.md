@@ -14,8 +14,7 @@ At `init`, nuthatch resolves the contract's ABI - **Sourcify first, then an Ethe
 runtime. A `DecodeRegistry` is built from the vendored ABIs at startup: `topic0` → event decoder,
 filtered by contract address.
 
-If a contract is a proxy, point `init` at the implementation ABI with `--abi-from <impl-address>`, or
-edit the `abi` path in `nuthatch.toml`.
+If a contract is a proxy, edit the `abi` path in `nuthatch.toml` to point at the implementation's ABI.
 
 ## One table per event
 
@@ -39,8 +38,8 @@ Every table also carries the same implicit columns, before the event's own field
 
 ## Column types
 
-Decoded fields keep their Solidity types. Wide integers (`uint256`, and anything over 128 bits) are
-stored as canonical big-endian bytes, with a derived `{col}_dec` DECIMAL column for numeric use. A value
+Decoded fields keep their Solidity types. Wide integers (`uint256`, and anything over 64 bits) are
+stored as an exact decimal string, with a derived `{col}_dec` DECIMAL column for numeric use. A value
 over 38 digits exceeds `DECIMAL(38,0)` - cast to `DOUBLE` or `HUGEINT` in SQL when you need arithmetic.
 See [The SQL surface](/docs/reference/sql/).
 

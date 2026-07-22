@@ -21,10 +21,10 @@ described in the [HTTP API reference](/docs/reference/http-api/) - an agent gets
 - `schema` - the data model: how tables and views are named and queried. Read this first.
 - `tables` - every decoded table (`{alias}__{event}`) with columns, Solidity types, and topic0.
 - `table` (`name`, `limit` = 50) - recent rows of one table, hot ∪ sealed.
-- `sql` (`q`, `limit` = 200) - a read-only query over the live tip ∪ sealed history. SELECT/WITH
+- `sql` (`query`, `limit` = 200) - a read-only query over the live tip ∪ sealed history. SELECT/WITH
   only; returns a compact table plus a provenance stamp. The bridge passes a small row cap so an
   agent's context isn't flooded.
-- `explain` (`q`) - validate a query **without executing it**; returns `{valid: true}` or an error
+- `explain` (`query`) - validate a query **without executing it**; returns `{valid: true}` or an error
   with a fix hint. Cheaper than `sql` - check before you spend.
 - `entity` (`id`) - one row by id (`{block:012}-{logindex:06}`).
 - `balance` (`address`) / `top_balances` (`limit`) - derived balances from the IVM view (i128 base

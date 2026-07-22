@@ -20,7 +20,8 @@ The way a skill lies is drift - it confidently describes a flag that changed two
   fails if any *authored* skill file mentions a `--flag` the generated reference doesn't contain.
   Hallucinated flags are the #1 way agents break a CLI, so the skill makes them structurally
   impossible to ship.
-- The config reference is authored, but its keys are drift-checked against the serde structs in CI.
+- Metric names get the same treatment: every `nuthatch_*` name the skill mentions is checked against
+  the binary's own `/metrics` output in CI, so a stale metric name can't ship either.
 
 ## What the agent learns
 
@@ -36,5 +37,6 @@ knowledge** (how to drive the CLI and shape a nest); the MCP is **runtime knowle
 this nest's data as of block N). An agent building a nest uses the skill; an agent answering
 questions uses the MCP; a good session uses both.
 
-Like the MCP surface, the skill's quality is measured - an eval harness runs agent sessions
-against authoring tasks, so "the agent can actually do this" is a tested property, not a hope.
+The parts that can rot are gated, not hoped: CI regenerates the CLI reference and fails on any drift,
+and rejects any authored file that names a flag or metric the binary doesn't have. A full authoring
+eval - scoring agent sessions end-to-end - is planned (RFC-0017).
