@@ -1,6 +1,6 @@
 ---
 title: ABIs, events & tables
-description: How decoded events become SQL tables — one table per event, with implicit columns.
+description: How decoded events become SQL tables - one table per event, with implicit columns.
 order: 2
 ---
 
@@ -9,7 +9,7 @@ mapping.
 
 ## ABIs
 
-At `init`, nuthatch resolves the contract's ABI — **Sourcify first, then an Etherscan-class API** — and
+At `init`, nuthatch resolves the contract's ABI - **Sourcify first, then an Etherscan-class API** - and
 **vendors it** into `abis/`. From then on the ABI is a local file; nuthatch never re-fetches it at
 runtime. A `DecodeRegistry` is built from the vendored ABIs at startup: `topic0` → event decoder,
 filtered by contract address.
@@ -34,14 +34,14 @@ Every table also carries the same implicit columns, before the event's own field
 | `block_timestamp` | The block header timestamp. |
 | `tx_hash` | The transaction hash. |
 | `log_index` | The log's index within the block. |
-| `address` | The emitting contract (distinguishes children sharing a table — see factories). |
+| `address` | The emitting contract (distinguishes children sharing a table - see factories). |
 | `_seq` | A single monotonic per-row ordering key, derived deterministically from `(block, log_index)`. |
 
 ## Column types
 
 Decoded fields keep their Solidity types. Wide integers (`uint256`, and anything over 128 bits) are
 stored as canonical big-endian bytes, with a derived `{col}_dec` DECIMAL column for numeric use. A value
-over 38 digits exceeds `DECIMAL(38,0)` — cast to `DOUBLE` or `HUGEINT` in SQL when you need arithmetic.
+over 38 digits exceeds `DECIMAL(38,0)` - cast to `DOUBLE` or `HUGEINT` in SQL when you need arithmetic.
 See [The SQL surface](/docs/reference/sql/).
 
 ## Regenerating
@@ -55,6 +55,6 @@ nuthatch schema
 
 ## Next
 
-- [Authored SQL views](/docs/build/views/) — derive answers over these tables
-- [Factories](/docs/build/factories/) — index children that share a table
-- [The SQL surface](/docs/reference/sql/) — querying, and the big-int columns
+- [Authored SQL views](/docs/build/views/) - derive answers over these tables
+- [Factories](/docs/build/factories/) - index children that share a table
+- [The SQL surface](/docs/reference/sql/) - querying, and the big-int columns

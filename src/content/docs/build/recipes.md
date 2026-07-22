@@ -1,15 +1,15 @@
 ---
-title: Recipes — the eth_call you don't need
-description: Derive contract reads like totalSupply and getReserves from indexed events — no eth_call, no archive node.
+title: Recipes - the eth_call you don't need
+description: Derive contract reads like totalSupply and getReserves from indexed events - no eth_call, no archive node.
 order: 6
 ---
 
 The Foundation reports that **over 70% of subgraphs call `eth_call`**. But most of those reads aren't
-special — they're *derivable* from the events a nest already indexes. Subgraphs fetch them only because
+special - they're *derivable* from the events a nest already indexes. Subgraphs fetch them only because
 they have no incremental-view engine. **Nuthatch does.**
 
 A **recipe** is an authored SQL view (see [Authored SQL views](/docs/build/views/)) that computes a read
-from indexed events instead of fetching it. Deterministic, free, no archive node — and a capability
+from indexed events instead of fetching it. Deterministic, free, no archive node - and a capability
 subgraphs structurally lack, because their storage isn't content-addressed.
 
 ## Use one
@@ -20,7 +20,7 @@ nuthatch recipe add total_supply     # writes views/total_supply.sql
 nuthatch sql "SELECT total_supply FROM usdc_total_supply"
 ```
 
-`recipe add` drops a `CREATE VIEW` into the nest's `views/`. It's yours to read, edit, or extend — it's
+`recipe add` drops a `CREATE VIEW` into the nest's `views/`. It's yours to read, edit, or extend - it's
 just SQL over your tables.
 
 ## The library
@@ -29,7 +29,7 @@ just SQL over your tables.
 | --- | --- | --- |
 | `total_supply` | ERC-20 `totalSupply()` | Σ minted − Σ burned (Transfers from/to `0x0`) |
 | `balances` | `balanceOf(addr)` per address | Σ(in) − Σ(out) per address |
-| `holder_count` | — | count of non-zero holders |
+| `holder_count` | - | count of non-zero holders |
 | `reserves` | Uniswap-V2 `getReserves()` | the latest `Sync(uint112,uint112)` per pair |
 
 > **Requirements.** `total_supply` / `balances` / `holder_count` need a `Transfer` event; `reserves`
@@ -38,7 +38,7 @@ just SQL over your tables.
 
 ## How `total_supply` works
 
-Under the hood it's just this — Σ minted minus Σ burned, straight over the transfer table:
+Under the hood it's just this - Σ minted minus Σ burned, straight over the transfer table:
 
 ```sql
 CREATE VIEW usdc_total_supply AS
@@ -49,7 +49,7 @@ SELECT
 FROM "usdc__transfer";
 ```
 
-`reserves` is a window over `Sync` — the current reserves are simply the most recent Sync per pair:
+`reserves` is a window over `Sync` - the current reserves are simply the most recent Sync per pair:
 
 ```sql
 SELECT address, reserve0, reserve1 FROM (
@@ -61,15 +61,15 @@ SELECT address, reserve0, reserve1 FROM (
 
 ## Derived vs `eth_call`
 
-Every recipe is proven against what the chain's own `eth_call` returns — the derived value is
+Every recipe is proven against what the chain's own `eth_call` returns - the derived value is
 **byte-for-byte** the fetched one, not merely plausible. Where a read genuinely *can't* be derived (an
-oracle price, an ungoverned param), that's the irreducible residue a fallback handles — the derive-first
+oracle price, an ungoverned param), that's the irreducible residue a fallback handles - the derive-first
 path here needs **no archive node and no external dependency**. It's the differentiator, and it's the
 default.
 
 ## What about metadata?
 
-`decimals` / `symbol` / `name` never change, so they're not derived — they're fetched once and cached:
+`decimals` / `symbol` / `name` never change, so they're not derived - they're fetched once and cached:
 
 ```sh
 nuthatch metadata fetch

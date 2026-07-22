@@ -5,7 +5,7 @@ import { getCollection } from 'astro:content';
 
 const all = await getCollection('nests');
 
-// Group by honest status — lead with what works, never dress up vaporware.
+// Group by honest status - lead with what works, never dress up vaporware.
 const order = { available: 0, building: 1, planned: 2 } as const;
 const byTier = (a: { data: { tier: number } }, b: { data: { tier: number } }) => a.data.tier - b.data.tier;
 
@@ -13,7 +13,7 @@ const groups = [
   {
     key: 'available',
     title: 'Available now',
-    blurb: 'Installable today — from a published nest repo, or generated straight from a contract address.',
+    blurb: 'Installable today - from a published nest repo, or generated straight from a contract address.',
     items: all.filter((n) => n.data.status === 'available').sort(byTier),
   },
   {
@@ -25,7 +25,7 @@ const groups = [
   {
     key: 'planned',
     title: 'Planned',
-    blurb: 'On the catalogue, demand-ranked. Not built yet — no fake install commands.',
+    blurb: 'On the catalogue, demand-ranked. Not built yet - no fake install commands.',
     items: all.filter((n) => n.data.status === 'planned').sort(byTier),
   },
 ];
@@ -43,8 +43,8 @@ const tierLabel = (t: number) => (t === 0 ? 'Tier 0 · beachhead' : `Tier ${t}`)
       <p class="section-label">Nests</p>
       <h1>The nest catalogue</h1>
       <p class="lede">
-        A <strong>nest</strong> is a packaged indexing definition — ABIs, decoded event tables and
-        declarative views — for a contract or protocol. Point Nuthatch at one and you get a
+        A <strong>nest</strong> is a packaged indexing definition - ABIs, decoded event tables and
+        declarative views - for a contract or protocol. Point Nuthatch at one and you get a
         self-hosted equivalent of the subgraph you'd otherwise rent.
       </p>
 
@@ -53,7 +53,7 @@ const tierLabel = (t: number) => (t === 0 ? 'Tier 0 · beachhead' : `Tier ${t}`)
           Nests live as git repos on
           <a href="https://github.com/nuthatch-indexer" rel="noopener">github.com/nuthatch-indexer</a>.
           Consuming one is a clone; publishing one is a <code>git push</code>. This page is a
-          catalogue for humans — it hands you a URL, your machine fetches from GitHub. Nothing routes
+          catalogue for humans - it hands you a URL, your machine fetches from GitHub. Nothing routes
           through us.
         </p>
         <div class="how-cmds">

@@ -6,7 +6,7 @@ order: 2
 
 Three files, all TOML. `nuthatch.toml` is written by `init` and yours to edit; `semantic.toml` is
 covered in [The semantic layer](/docs/build/semantic/); `roost.toml` mounts many nests. A nest
-declaring a `schema_version` newer than the binary understands is rejected on load — the guard that
+declaring a `schema_version` newer than the binary understands is rejected on load - the guard that
 makes `init --from` and `nest load` safe.
 
 ## `nuthatch.toml`
@@ -70,7 +70,7 @@ url = "https://…"
 
 All three are opt-in: absent means no screening, no flags, no alerts, zero cost. Alert delivery is
 at-least-once via a durable outbox; a stalled sink never blocks indexing. Note `velocity_window` is
-a **block count**, not wall-clock — an honest approximation, since the chain has no clock.
+a **block count**, not wall-clock - an honest approximation, since the chain has no clock.
 
 ### Webhooks (RFC-0010)
 
@@ -81,7 +81,7 @@ table = "usdc__transfer"
 where = "value_dec > 1000000"     # optional SQL predicate (note the key is `where`)
 url = "https://…"
 batch_max = 100                   # optional rows-per-POST cap
-finality = "sealed"               # "sealed" (default — never lies) | "tip" (fast, may retract)
+finality = "sealed"               # "sealed" (default - never lies) | "tip" (fast, may retract)
 since = "registration"            # "registration" (default) | "genesis" | a block number
 secret = "…"                      # optional; adds X-Nuthatch-Signature: sha256=<hex> (HMAC)
 ```

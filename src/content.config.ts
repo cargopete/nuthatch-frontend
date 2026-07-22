@@ -3,7 +3,7 @@ import { glob } from 'astro/loaders';
 
 // Documentation lives as Markdown under src/content/docs/<group>/<page>.md. The directory is the
 // sidebar group (see DocsLayout); `order` places the page within it. Static, Shiki-highlighted, no
-// client runtime — same rules as the rest of the site.
+// client runtime - same rules as the rest of the site.
 const docs = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/docs' }),
   schema: z.object({
@@ -14,7 +14,7 @@ const docs = defineCollection({
 });
 
 // Blog posts live as Markdown under src/content/blog. Static build, Shiki-highlighted code, no
-// client runtime — same rules as the rest of the site.
+// client runtime - same rules as the rest of the site.
 const blog = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
   schema: z.object({
@@ -27,7 +27,7 @@ const blog = defineCollection({
   }),
 });
 
-// The nest catalogue. Single source of truth is the org's index repo — the site fetches it at
+// The nest catalogue. Single source of truth is the org's index repo - the site fetches it at
 // build time, so the page and the index can't drift. Build-time only: nothing ships to the client,
 // and a failed fetch fails the build loudly (the last good deploy stays live).
 const NESTS_INDEX =

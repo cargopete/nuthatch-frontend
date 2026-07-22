@@ -4,19 +4,19 @@ description: "The Claude Code skill that teaches an agent to drive nuthatch (RFC
 order: 3
 ---
 
-The builder skill teaches a coding agent to *build with* nuthatch — scaffold nests, edit configs,
-add factories and compliance, package and publish, run roosts, and troubleshoot — the way an
+The builder skill teaches a coding agent to *build with* nuthatch - scaffold nests, edit configs,
+add factories and compliance, package and publish, run roosts, and troubleshoot - the way an
 experienced operator would. It lives in the repo at
 [`skills/nuthatch-builder/`](https://github.com/nuthatch-indexer/nuthatch/tree/main/skills/nuthatch-builder)
 and drops into any agent that reads Claude-style skills.
 
 ## The one rule: generate what can be generated
 
-The way a skill lies is drift — it confidently describes a flag that changed two releases ago. So:
+The way a skill lies is drift - it confidently describes a flag that changed two releases ago. So:
 
-- **`cli-reference.md` is rendered from the binary itself** — clap's own metadata, via a hidden
+- **`cli-reference.md` is rendered from the binary itself** - clap's own metadata, via a hidden
   `skill-refs` subcommand. The binary describing itself is the most drift-proof source there is.
-- **CI enforces it.** A test regenerates the reference and fails the build on any difference — and
+- **CI enforces it.** A test regenerates the reference and fails the build on any difference - and
   fails if any *authored* skill file mentions a `--flag` the generated reference doesn't contain.
   Hallucinated flags are the #1 way agents break a CLI, so the skill makes them structurally
   impossible to ship.
@@ -36,5 +36,5 @@ knowledge** (how to drive the CLI and shape a nest); the MCP is **runtime knowle
 this nest's data as of block N). An agent building a nest uses the skill; an agent answering
 questions uses the MCP; a good session uses both.
 
-Like the MCP surface, the skill's quality is measured — an eval harness runs agent sessions
+Like the MCP surface, the skill's quality is measured - an eval harness runs agent sessions
 against authoring tasks, so "the agent can actually do this" is a tested property, not a hope.

@@ -10,7 +10,7 @@ interface Props {
 const { title, description, slug } = Astro.props;
 
 // The docs IA: sidebar groups, in order. Each group's pages come from `src/content/docs/<dir>/`,
-// ordered by the page's `order` frontmatter. Single source of truth — add a page, it appears.
+// ordered by the page's `order` frontmatter. Single source of truth - add a page, it appears.
 const GROUPS = [
   { dir: 'start', label: 'Start here' },
   { dir: 'concepts', label: 'Concepts' },
@@ -69,7 +69,7 @@ const groups = GROUPS.map((g) => ({
 
   /* Sidebar (desktop: sticky column; the <details> chrome is neutralised). */
   .docs-nav { position: sticky; top: 74px; align-self: start; max-height: calc(100vh - 90px); overflow-y: auto; }
-  /* Desktop: the summary is inert — the nav can't be collapsed, and stays open. */
+  /* Desktop: the summary is inert - the nav can't be collapsed, and stays open. */
   .docs-nav > summary { list-style: none; cursor: default; pointer-events: none; }
   .docs-nav > summary::-webkit-details-marker { display: none; }
   .docs-nav-label {
@@ -98,7 +98,7 @@ const groups = GROUPS.map((g) => ({
   .docs-content { min-width: 0; }
   .docs-content :global(h1) { font-size: clamp(1.9rem, 4vw, 2.6rem); line-height: 1.12; letter-spacing: -0.025em; margin-bottom: 1.4rem; }
 
-  /* Prose — shared with the blog. */
+  /* Prose - shared with the blog. */
   .prose :global(p) { color: var(--text-muted); font-size: 1.04rem; line-height: 1.72; margin-bottom: 1.3rem; }
   .prose :global(h2) { font-size: 1.45rem; letter-spacing: -0.02em; color: var(--text); margin: 2.6rem 0 1rem; line-height: 1.25; }
   .prose :global(h3) { font-size: 1.12rem; letter-spacing: -0.01em; color: var(--text); margin: 2rem 0 0.7rem; }

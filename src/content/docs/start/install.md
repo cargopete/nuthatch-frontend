@@ -1,10 +1,10 @@
 ---
 title: "Install"
-description: "Install the nuthatch binary — curl | sh, cargo install, or a prebuilt release."
+description: "Install the nuthatch binary - curl | sh, cargo install, or a prebuilt release."
 order: 2
 ---
 
-nuthatch is **one static binary**. No Postgres, no Docker, no IPFS, no account — install it and
+nuthatch is **one static binary**. No Postgres, no Docker, no IPFS, no account - install it and
 you're done.
 
 ## The one-liner
@@ -15,7 +15,7 @@ curl -fsSL https://nuthatch-indexer.com/install.sh | sh
 
 The script detects your platform, downloads the matching release binary, verifies its checksum, and
 puts `nuthatch` on your `PATH`. It's short and
-[readable on GitHub](https://github.com/nuthatch-indexer/nuthatch-frontend/blob/main/public/install.sh) —
+[readable on GitHub](https://github.com/nuthatch-indexer/nuthatch-frontend/blob/main/public/install.sh) -
 audit it first if `curl | sh` makes you itch.
 
 Prebuilt binaries cover **macOS (Apple Silicon)** and **Linux x86_64**. Checksums ship with every
@@ -39,11 +39,11 @@ recent stable Rust works.
 nuthatch --version
 ```
 
-Then take the two-minute path: [Quickstart](/docs/start/quickstart/) — from a contract address to a
+Then take the two-minute path: [Quickstart](/docs/start/quickstart/) - from a contract address to a
 live, queryable API.
 
 ```sh
-nuthatch init 0xA0b86991c6218b36c1D19D4a2e9Eb0cE3606eB48   # USDC — chain auto-detected
+nuthatch init 0xA0b86991c6218b36c1D19D4a2e9Eb0cE3606eB48   # USDC - chain auto-detected
 nuthatch dev
 ```
 

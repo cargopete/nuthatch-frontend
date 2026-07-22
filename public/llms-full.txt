@@ -56,8 +56,8 @@ obstacle has been the operational weight of the tooling, which is an engineering
 4. `nuthatch transform <component.wasm>` - runs a pure, zero-capability WASM transform over an Arrow
    batch; effectful stages take per-component capability grants (`kv` today). `nuthatch mcp` -
    serves the Model Context Protocol over stdio (12 tools: status, schema, tables, table, sql,
-   explain, entity, balance, top_balances, flags, exposure, screen_status; plus 3 resources —
-   nuthatch://schema|tables|status — and 3 prompts: profile-contract, investigate-address,
+   explain, entity, balance, top_balances, flags, exposure, screen_status; plus 3 resources -
+   nuthatch://schema|tables|status - and 3 prompts: profile-contract, investigate-address,
    verify-a-number). Governed semantic layer (RFC-0016): the `schema` tool serves this nest's
    meaning; failed queries return fix hints and `explain` validates without executing; results carry
    a citable provenance stamp.
