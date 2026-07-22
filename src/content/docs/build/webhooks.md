@@ -16,8 +16,8 @@ name = "large-transfers"
 table = "usdc__transfer"          # rows from this table
 where = "value_dec > 1000000"      # optional SQL predicate - note the key is `where`, not `when`
 url = "https://your-service/hooks/usdc"
-# batch_max = 100                  # optional rows-per-POST cap
-# finality = "sealed"              # "sealed" (default, never retracts) | "tip" (fast, may retract)
+# batch_max = 100                  # optional rows-per-POST cap (default 50)
+# finality = "sealed"              # "sealed" (default, and the only mode today); "tip" is planned
 # since = "registration"           # "registration" (default) | "genesis" | a block number
 # secret = "…"                     # optional HMAC-SHA256 secret → X-Nuthatch-Signature header
 ```

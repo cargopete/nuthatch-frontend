@@ -11,7 +11,7 @@ operator-run deployments (RFC-0022 - designed, deferred). Everything below descr
 ## The pipeline
 
 ```text
-RPC (or colocated reth ExEx)
+RPC ingestion                     (a colocated reth ExEx mode is planned, RFC-0003)
   → deterministic decode          (ABI → typed rows; the decode registry)
   → redb hot store                (the mutable tip: entity point-reads, reorg rollback)
   → sealed Parquet segments       (immutable, content-addressed, past finality)

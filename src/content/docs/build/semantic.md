@@ -34,10 +34,10 @@ scale by decimals and exclude mints.
 
 ## Generated, then curated
 
-`init` seeds `semantic.toml` from the ABI - types, obvious units, the decimals footgun for anything that
-looks like a token. You curate from there: add the domain knowledge only you have. It's checked and
-drift-gated like everything else, so a description that references a dropped column fails
-`nuthatch check`.
+`init` seeds `semantic.toml` from the ABI - placeholder descriptions per column plus the derived
+footguns (reserved words, and the big-int columns that need `_dec`). You curate from there: add the
+units, meanings, and domain knowledge only you have. If a description later references a column the
+decode registry no longer has, `dev` warns loudly at startup - stale semantics are worse than none.
 
 ## Next
 

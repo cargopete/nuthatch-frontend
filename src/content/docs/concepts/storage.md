@@ -9,9 +9,10 @@ surface.
 
 ## Hot: the redb tip store
 
-Recent, still-reorgable blocks live in an embedded **redb** key-value store - one table per event table,
-keyed by `(block_number, log_index)` so a reorg rollback is a cheap range-delete. This is the mutable
-tier: it's the *only* place a reorg ever lands. Entity point-reads (`/entity/{id}`) hit it directly.
+Recent, still-reorgable blocks live in an embedded **redb** key-value store - a single table keyed by
+`(block_number, log_index)`, each row tagged with the event table it belongs to, so a reorg rollback is
+a cheap range-delete above the fork block. This is the mutable tier: it's the *only* place a reorg ever
+lands. Entity point-reads (`/entity/{id}`) hit it directly.
 
 ## Cold: content-addressed Parquet
 
@@ -40,8 +41,8 @@ the hot→cold seam without the caller knowing where the row lives.
 
 ## Big integers
 
-Values wider than 64 bits (a `uint256`) are stored as canonical big-endian bytes, with derived
-`{col}_dec` DECIMAL views for numeric use. A column over 38 digits exceeds DECIMAL(38,0) - cast it to
+Values wider than 64 bits (a `uint256`) are stored as an exact decimal string, with a derived
+`{col}_dec` DECIMAL column for numeric use. A value over 38 digits exceeds DECIMAL(38,0) - cast it to
 `DOUBLE` or `HUGEINT` in SQL when you need arithmetic. See [The SQL surface](/docs/reference/sql/).
 
 ## Next
