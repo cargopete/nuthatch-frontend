@@ -1,6 +1,18 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
+// Documentation lives as Markdown under src/content/docs/<group>/<page>.md. The directory is the
+// sidebar group (see DocsLayout); `order` places the page within it. Static, Shiki-highlighted, no
+// client runtime — same rules as the rest of the site.
+const docs = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/docs' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    order: z.number().default(99),
+  }),
+});
+
 // Blog posts live as Markdown under src/content/blog. Static build, Shiki-highlighted code, no
 // client runtime — same rules as the rest of the site.
 const blog = defineCollection({
@@ -45,4 +57,4 @@ const nests = defineCollection({
   }),
 });
 
-export const collections = { blog, nests };
+export const collections = { docs, blog, nests };

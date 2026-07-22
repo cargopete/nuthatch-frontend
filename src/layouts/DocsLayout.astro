@@ -1,0 +1,144 @@
+---
+import Layout from './Layout.astro';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  title: string;
+  description?: string;
+  slug: string;
+}
+const { title, description, slug } = Astro.props;
+
+// The docs IA: sidebar groups, in order. Each group's pages come from `src/content/docs/<dir>/`,
+// ordered by the page's `order` frontmatter. Single source of truth — add a page, it appears.
+const GROUPS = [
+  { dir: 'start', label: 'Start here' },
+  { dir: 'concepts', label: 'Concepts' },
+  { dir: 'build', label: 'Build a nest' },
+  { dir: 'operate', label: 'Operate' },
+  { dir: 'reference', label: 'Reference' },
+  { dir: 'ai', label: 'AI-native' },
+  { dir: 'contributing', label: 'Contributing' },
+];
+const all = await getCollection('docs');
+const groups = GROUPS.map((g) => ({
+  label: g.label,
+  items: all
+    .filter((d) => d.id.startsWith(`${g.dir}/`))
+    .sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99))
+    .map((d) => ({ slug: d.id, title: d.data.title })),
+})).filter((g) => g.items.length > 0);
+---
+<Layout path={`/docs/${slug}`} title={`${title} - Nuthatch docs`} description={description}>
+  <section class="docs">
+    <div class="wrap docs-grid">
+      <!-- Mobile: a native <details> disclosure; desktop: an always-open sticky column. -->
+      <details class="docs-nav">
+        <summary>
+          <span class="docs-nav-label">Documentation</span>
+          <span class="docs-nav-current">{title}</span>
+        </summary>
+        <nav aria-label="Documentation">
+          {groups.map((g) => (
+            <div class="docs-group">
+              <p class="docs-group-label">{g.label}</p>
+              <ul>
+                {g.items.map((it) => (
+                  <li>
+                    <a href={`/docs/${it.slug}`} class={it.slug === slug ? 'active' : ''}
+                      aria-current={it.slug === slug ? 'page' : undefined}>{it.title}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      </details>
+
+      <article class="prose docs-content">
+        <slot />
+      </article>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .docs { padding-block: clamp(1.6rem, 4vw, 2.6rem) clamp(4rem, 9vw, 6.5rem); }
+  .docs-grid { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: clamp(2rem, 5vw, 4rem); }
+
+  /* Sidebar (desktop: sticky column; the <details> chrome is neutralised). */
+  .docs-nav { position: sticky; top: 74px; align-self: start; max-height: calc(100vh - 90px); overflow-y: auto; }
+  .docs-nav > summary { list-style: none; cursor: default; }
+  .docs-nav > summary::-webkit-details-marker { display: none; }
+  .docs-nav-label {
+    display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-faint, var(--text-muted));
+    margin-bottom: 1rem;
+  }
+  .docs-nav-current { display: none; }
+  .docs-group { margin-bottom: 1.4rem; }
+  .docs-group-label {
+    font-size: 0.82rem; font-weight: 600; letter-spacing: -0.01em; color: var(--text);
+    margin: 0 0 0.5rem;
+  }
+  .docs-group ul { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--border); }
+  .docs-group li { margin: 0; }
+  .docs-group a {
+    display: block; padding: 0.3rem 0 0.3rem 0.85rem; margin-left: -1px;
+    font-size: 0.9rem; color: var(--text-muted); border-left: 1px solid transparent;
+    line-height: 1.35;
+  }
+  .docs-group a:hover { color: var(--text); text-decoration: none; }
+  .docs-group a.active {
+    color: var(--accent); border-left-color: var(--accent);
+  }
+
+  .docs-content { min-width: 0; }
+  .docs-content :global(h1) { font-size: clamp(1.9rem, 4vw, 2.6rem); line-height: 1.12; letter-spacing: -0.025em; margin-bottom: 1.4rem; }
+
+  /* Prose — shared with the blog. */
+  .prose :global(p) { color: var(--text-muted); font-size: 1.04rem; line-height: 1.72; margin-bottom: 1.3rem; }
+  .prose :global(h2) { font-size: 1.45rem; letter-spacing: -0.02em; color: var(--text); margin: 2.6rem 0 1rem; line-height: 1.25; }
+  .prose :global(h3) { font-size: 1.12rem; letter-spacing: -0.01em; color: var(--text); margin: 2rem 0 0.7rem; }
+  .prose :global(a) { color: var(--accent); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+  .prose :global(a:hover) { border-bottom-color: var(--accent); }
+  .prose :global(strong) { color: var(--text); font-weight: 600; }
+  .prose :global(ul), .prose :global(ol) { color: var(--text-muted); font-size: 1.04rem; line-height: 1.7; margin: 0 0 1.3rem; padding-left: 1.3rem; }
+  .prose :global(li) { margin-bottom: 0.45rem; }
+  .prose :global(li::marker) { color: var(--text-faint, var(--text-muted)); }
+  .prose :global(hr) { border: none; border-top: 1px solid var(--border); margin: 2.6rem 0; }
+  .prose :global(blockquote) {
+    margin: 1.5rem 0; padding: 0.6rem 0 0.6rem 1.1rem;
+    border-left: 3px solid var(--rust); color: var(--text-muted); background: var(--pale-rust-bg);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .prose :global(blockquote p) { margin-bottom: 0.4rem; }
+  .prose :global(blockquote p:last-child) { margin-bottom: 0; }
+  .prose :global(table) { width: 100%; border-collapse: collapse; margin: 0 0 1.6rem; font-size: 0.95rem; display: block; overflow-x: auto; }
+  .prose :global(th), .prose :global(td) { text-align: left; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+  .prose :global(th) { color: var(--text); font-weight: 600; white-space: nowrap; }
+  .prose :global(code) {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.86em;
+    background: color-mix(in srgb, var(--text) 8%, transparent); padding: 0.12em 0.36em; border-radius: 5px;
+  }
+  .prose :global(pre) {
+    background: var(--bg-code, #1b1a17); border: 1px solid var(--border); border-radius: var(--radius, 10px);
+    padding: 1rem 1.1rem; overflow-x: auto; margin: 0 0 1.5rem; font-size: 0.85rem; line-height: 1.6;
+  }
+  .prose :global(pre code) { background: none; padding: 0; border-radius: 0; font-size: inherit; }
+
+  @media (max-width: 52rem) {
+    .docs-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    .docs-nav {
+      position: static; max-height: none; overflow: visible;
+      border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-elev);
+    }
+    .docs-nav > summary {
+      cursor: pointer; padding: 0.8rem 1rem; display: flex; flex-direction: column; gap: 0.15rem;
+    }
+    .docs-nav-label { margin: 0; }
+    .docs-nav-current { display: block; color: var(--text); font-weight: 600; font-size: 0.95rem; }
+    .docs-nav > nav { padding: 0 1rem 1rem; }
+    .docs-nav[open] > summary { border-bottom: 1px solid var(--border); margin-bottom: 0.8rem; }
+  }
+</style>

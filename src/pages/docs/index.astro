@@ -1,0 +1,41 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+<DocsLayout
+  title="Documentation"
+  description="Everything about nuthatch — the golden path, every component, and guides for building nests and operating them."
+  slug=""
+>
+  <h1>Documentation</h1>
+  <p>
+    Everything about nuthatch — the two-minute golden path, the concepts underneath, and full guides for
+    building nests and operating them. New here? Start with the
+    <a href="/docs/start/quickstart/">Quickstart</a>.
+  </p>
+
+  <h2>Start here</h2>
+  <ul>
+    <li><a href="/docs/start/quickstart/">Quickstart</a> — from a contract address to a live, queryable API in under two minutes.</li>
+    <li><a href="/docs/concepts/nests/">What is a nest?</a> — the core mental model.</li>
+  </ul>
+
+  <h2>Build a nest</h2>
+  <ul>
+    <li><a href="/docs/build/config/">nuthatch.toml</a> — the one config file a nest has.</li>
+    <li><a href="/docs/build/views/">Authored SQL views</a> — first-class derived logic.</li>
+    <li><a href="/docs/build/recipes/">Recipes</a> — the <code>eth_call</code> you don't need.</li>
+  </ul>
+
+  <h2>Operate</h2>
+  <ul>
+    <li><a href="/docs/operate/roosts/">Run a roost</a> — many nests, one runtime, one or more chains.</li>
+    <li><a href="/docs/operate/registry/">The nest registry</a> — publish and pull nests by name.</li>
+    <li><a href="/docs/operate/upgrades/">Upgrading a nest</a> — the N-1 problem, solved.</li>
+  </ul>
+
+  <h2>Reference &amp; internals</h2>
+  <ul>
+    <li><a href="/docs/reference/cli/">CLI reference</a>, <a href="/docs/reference/http-api/">HTTP API</a>, <a href="/docs/reference/mcp/">MCP</a>.</li>
+    <li><a href="/docs/contributing/rfcs/">RFCs</a> — the numbered design record.</li>
+  </ul>
+</DocsLayout>
