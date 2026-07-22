@@ -29,6 +29,9 @@ raise:
 - **30-second timeout** per query. A runaway is interrupted, not left to spin.
 - **50,000-row cap** per result (requests can ask for less via `max_rows`; the MCP bridge asks for
   much less so an agent's context isn't flooded).
+- **64 MiB result-byte cap** per query. A row cap bounds count, not width - a wide-cell `SELECT` would
+  otherwise materialise unbounded Rust-side (outside DuckDB's memory limit); this keeps a query inside
+  the footprint budget. Hitting it flags the result truncated, same as the row cap.
 - **2 concurrent analytical queries.** A third gets a `503` - retry, don't remove the gate.
 - **SELECT/WITH only.** The query surface is read-only by construction; the ingest thread is the
   only writer.

@@ -26,7 +26,7 @@ nest's full surface appears under its `/<name>/…` prefix, byte-identical to a 
 - `GET /entities` / `GET /entity/{id}` - entity point-reads from the hot store. Ids are formatted
   `{block:012}-{logindex:06}`.
 - `GET /sql?q=…&max_rows=N` - read-only SQL over the live tip ∪ sealed history (SELECT/WITH only).
-  Guarded: 30 s timeout, row cap (50,000 max; `max_rows` asks for less), 2 concurrent. Results
+  Guarded: 30 s timeout, row cap (50,000 max; `max_rows` asks for less), 64 MiB result-byte cap, 2 concurrent. Results
   carry a **provenance stamp** - the block range and content-addressed segments the answer came
   from - so a figure can be cited against immutable data. See
   [The SQL surface](/docs/reference/sql/).

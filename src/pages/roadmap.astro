@@ -1,10 +1,10 @@
 <!-- Regenerate against the repo README + docs/rfcs when either changes materially.
      Ground-truth rule: README / progress log wins over this page.
-     Last regenerated against the progress log through the v0.6.0 release: RFC-0012 (bundles +
+     Last regenerated against the progress log through the v0.6.1 release: RFC-0012 (bundles +
      roost), RFC-0015/0016/0017 (delightful core, agent-grade MCP, builder skill), RFC-0019 (nest
      registry), RFC-0020 (N-1 upgrade), RFC-0021 slice 1 (multichain roost), RFC-0023 tiers 1-2
      (derive-first recipes + metadata cache), and RFC-0025 (adaptive MCP tools) all shipped;
-     v0.6.0 is the current release.
+     v0.6.1 is the current release.
      Keep it product-neutral: describe the binary, not any deployment or commercial
      arrangement. -->
 ---
@@ -182,7 +182,7 @@ const progressLog = `${REPO}#progress-log`;
 
       <p class="grp">Release and footprint</p>
       <ul class="rl">
-        <li>v0.6.0 is the current release (tagged, with prebuilt binaries on the GitHub release) - portable nest bundles, the nest registry, zero-downtime N-1 upgrades, the multichain roost, derive-first recipes, and adaptive MCP tools, on top of the delightful core and agent-grade MCP. <code>cargo install --git</code> builds on rustc 1.95 or newer.</li>
+        <li>v0.6.1 is the current release (tagged, with prebuilt binaries on the GitHub release) - portable nest bundles, the nest registry, zero-downtime N-1 upgrades, the multichain roost, derive-first recipes, and adaptive MCP tools, on top of the delightful core and agent-grade MCP. <code>cargo install --git</code> builds on rustc 1.95 or newer.</li>
         <li>A CI footprint job fails the build above 256 MB of RAM.</li>
         <li>Measured peak: ≈37 MB for a single contract, ≈58 MB across a three-contract, 23-table nest - 2.8% of the 2 GB budget.</li>
       </ul>
